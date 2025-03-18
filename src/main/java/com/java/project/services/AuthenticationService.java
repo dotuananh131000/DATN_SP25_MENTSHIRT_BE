@@ -73,7 +73,7 @@ public class AuthenticationService {
     public String generateToken(NhanVien nhanVien) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(nhanVien.getMaNhanVien())
+                .subject(nhanVien.getEmail())
                 .issuer("Men-TShirt")
                 .issueTime(new Date())
                 .claim("scope", nhanVien.getVaiTro().getMaVaiTro())

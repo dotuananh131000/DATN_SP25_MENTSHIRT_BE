@@ -35,6 +35,17 @@ public class NhanVienController {
         }
     }
 
+    @GetMapping("/myAccount")
+    public ResponseEntity<ApiResponse>getMyAcount(){
+        try{
+            NhanVienDto nhanVienDto = nhanVienService.getMyInfo();
+            return ResponseEntity.ok(
+                    new ApiResponse("success", "Lấy thông tin tài khoản thành công", nhanVienDto));
+        }catch (ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("error", e.getMessage(), null));
+        }
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse> getAllNhanVien(
             @RequestParam(required = false) String keyword,
