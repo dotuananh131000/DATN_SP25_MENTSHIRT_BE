@@ -1,7 +1,7 @@
 package com.java.project.repositories;
 
 import com.java.project.dtos.SanPhamChiTietResponse;
-import com.java.project.entities.SanPhamChiTiet;
+import com.java.project.entities.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -52,6 +52,9 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     List<SanPhamChiTiet> findBySanPhamId(Integer sanPhamId);
 
+    @Query("SELECT s FROM SanPhamChiTiet s WHERE s.sanPham.id = :sanPhamId AND  s.trangThai = true")
+    List<SanPhamChiTiet> findByActiveSanPhamId(Integer sanPhamId);
+
     @Query("""
             select new com.java.project.dtos.SanPhamChiTietResponse(
             spct.id,
@@ -76,4 +79,30 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             where spct.soLuong >0
             """)
     List<SanPhamChiTietResponse> getAll();
+
+    @Query("SELECT DISTINCT spct.chatLieu FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :id AND spct.trangThai = true AND spct.sanPham.trangThai = true")
+    List<ChatLieu> findChatLieuBySanPhamId(@Param("id") Integer id);
+
+    @Query("SELECT DISTINCT spct.coAo FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :id AND spct.trangThai = true AND spct.sanPham.trangThai = true")
+    List<CoAo> findCoAoBySanPhamId(@Param("id") Integer id);
+
+    @Query("SELECT DISTINCT spct.kichThuoc FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :id AND spct.trangThai = true AND spct.sanPham.trangThai = true")
+    List<KichThuoc> findKichThuocBySanPhamId(@Param("id") Integer id);
+
+    @Query("SELECT DISTINCT spct.mauSac FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :id AND spct.trangThai = true AND spct.sanPham.trangThai = true")
+    List<MauSac> findMauSacBySanPhamId(@Param("id") Integer id);
+
+    @Query("SELECT DISTINCT spct.tayAo FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :id AND spct.trangThai = true AND spct.sanPham.trangThai = true")
+    List<TayAo> findTayAoBySanPhamId(@Param("id") Integer id);
+
+    @Query("SELECT DISTINCT spct.thuongHieu FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :id AND spct.trangThai = true AND spct.sanPham.trangThai = true")
+    List<ThuongHieu> findThuongHieuBySanPhamId(@Param("id") Integer id);
+
+    @Query("SELECT DISTINCT spct.xuatXu FROM SanPhamChiTiet spct WHERE spct.sanPham.id = :id AND spct.trangThai = true AND spct.sanPham.trangThai = true")
+    List<XuatXu> findXuatXuBySanPhamId(@Param("id") Integer id);
+
+
+    @Query("SELECT s FROM SanPhamChiTiet s WHERE s.sanPham.id = :sanPhamId AND s.trangThai = true")
+    List<SanPhamChiTiet> findBySanPhamIdActive(@Param("sanPhamId") Integer sanPhamId);
+
 }
