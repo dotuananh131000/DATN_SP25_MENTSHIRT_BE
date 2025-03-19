@@ -104,19 +104,19 @@ public class BanHangService {
 
         if(hoaDon.getTrangThaiGiaoHang() == 8){
             hoaDon.setTrangThaiGiaoHang(1);
-            return hoaDonRepository.save(hoaDon);
+            return hoaDonRepository.save(hoaDon); //Từ tạo hóa đơn sang chờ chờ xác nhận
         }else if(hoaDon.getTrangThaiGiaoHang() == 1){
             hoaDon.setTrangThaiGiaoHang(2);
-            return hoaDonRepository.save(hoaDon);
+            return hoaDonRepository.save(hoaDon); //Từ chờ xác nhận, sang xác nhận
         }else if(hoaDon.getTrangThaiGiaoHang() == 2){
             hoaDon.setTrangThaiGiaoHang(3);
-            return hoaDonRepository.save(hoaDon);
+            return hoaDonRepository.save(hoaDon); //Từ xác nhận, sang chờ vận chuyển
         }else if(hoaDon.getTrangThaiGiaoHang() == 3){
             hoaDon.setTrangThaiGiaoHang(4);
-            return hoaDonRepository.save(hoaDon);
+            return hoaDonRepository.save(hoaDon); //Từ chờ vận chuyển, sang vận chuyển
         }else if(hoaDon.getTrangThaiGiaoHang() == 4){
             hoaDon.setTrangThaiGiaoHang(5);
-            return hoaDonRepository.save(hoaDon);
+            return hoaDonRepository.save(hoaDon); //Từ vận chuyển sang thành công
         }
         return hoaDonRepository.save(hoaDon);
     }

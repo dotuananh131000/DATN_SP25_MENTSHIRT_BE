@@ -20,4 +20,5 @@ public class HoaDonPhuongThucThanhToanResponse {
     private LocalDate ngayThucHienThanhToan;
     private BigDecimal soTienThanhToan;
     private String ghiChu;
+    private String nguoiXacNhan;
 }

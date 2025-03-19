@@ -27,7 +27,10 @@ import java.util.List;
 public class SercurityConfig {
 
     // Danh sách các endpoint công khai, không yêu cầu xác thực
-    private final String [] PUBLIC_ENPOINTS = {"/api/auth/token", "/api/auth/introspect"};
+    private final String [] PUBLIC_ENPOINTS = {"/api/auth/token", "/api/auth/introspect"
+            , "/san-pham-chi-tiet/thuoc-tinh", "/san-pham-chi-tiet/chi-tiet"
+            , "/san-pham", "/api/thuong-hieu", "/api/chat-lieu", "/api/co-ao"
+            , "/api/kich-thuoc", "/api/mau-sac", "/api/tay-ao", "/api/xuat-xu"};
 
     @NonFinal
     protected static final String SIGN_KEY = ENVConfig.getEnv("JWT_SECRET");
@@ -46,7 +49,7 @@ public class SercurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Tắt CSRF để tránh chặn request từ trình duyệt
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() // Xử lý preflight requests
-                        .requestMatchers(HttpMethod.POST, PUBLIC_ENPOINTS).permitAll() // Các API public
+                        .requestMatchers( PUBLIC_ENPOINTS).permitAll() // Các API public
                         .requestMatchers("/api/**").hasAuthority("ROLE_ADMIN") // Chỉ Admin mới truy cập
                         .anyRequest().authenticated()
                 )

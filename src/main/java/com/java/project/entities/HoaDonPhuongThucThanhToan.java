@@ -40,4 +40,7 @@ public class HoaDonPhuongThucThanhToan {
     @Column(name = "ghi_chu")
     private String ghiChu;
 
+    @Column(name = "nguoi_xac_nhan")
+    private String nguoiXacNhan;
+
 }

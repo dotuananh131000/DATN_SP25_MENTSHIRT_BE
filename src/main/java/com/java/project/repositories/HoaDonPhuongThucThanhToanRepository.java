@@ -18,7 +18,8 @@ public interface HoaDonPhuongThucThanhToanRepository extends JpaRepository<HoaDo
             pttt.tenPhuongThuc,
             hdpttt.ngayThucHienThanhToan,
             hdpttt.soTienThanhToan,
-            hdpttt.ghiChu
+            hdpttt.ghiChu,
+            hdpttt.nguoiXacNhan
             )from HoaDonPhuongThucThanhToan hdpttt 
             left join HoaDon hd on hdpttt.hoaDon.id = hd.id
             left join PhuongThucThanhToan pttt on hdpttt.phuongThucThanhToan.id = pttt.id

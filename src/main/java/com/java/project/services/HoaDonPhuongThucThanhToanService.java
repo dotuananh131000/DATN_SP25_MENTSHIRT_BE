@@ -47,6 +47,7 @@ public class HoaDonPhuongThucThanhToanService {
         hoaDonPhuongThucThanhToan.setHoaDon(hoaDon);
         hoaDonPhuongThucThanhToan.setPhuongThucThanhToan(pttt);
         hoaDonPhuongThucThanhToan.setNgayThucHienThanhToan(LocalDate.now());
+        hoaDonPhuongThucThanhToan.setNguoiXacNhan(request.getNguoiXacNhan());
         return hoaDonPhuongThucThanhToanRepository.save(hoaDonPhuongThucThanhToan);
     }
 }
