@@ -39,7 +39,6 @@ public class ApplicationInitConfig {
                 nhanVien.setVaiTro(vaiTro);
                 nhanVien.setTrangThai(1);
                 nhanVien.setAvatarUrl("gfgfgfg");
-
                 nhanVienRepository.save(nhanVien);
                 log.warn("Admin has been create");
             }
