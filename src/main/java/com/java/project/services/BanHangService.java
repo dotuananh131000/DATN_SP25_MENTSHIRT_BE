@@ -101,8 +101,9 @@ public class BanHangService {
         }
         HoaDon  hoaDon = hoaDonRepository.findById(idHD)
                 .orElseThrow(()-> new EntityNotFoundException("Không timg thấy id hóa đơn"+ idHD));
-        hoaDon.setTrangThai(1);
+
         if(hoaDon.getTrangThaiGiaoHang() == 8){
+            hoaDon.setTrangThai(1);
             hoaDon.setTrangThaiGiaoHang(1);
             return hoaDonRepository.save(hoaDon); //Từ tạo hóa đơn sang chờ chờ xác nhận
         }else if(hoaDon.getTrangThaiGiaoHang() == 1){
