@@ -127,4 +127,20 @@ public class MailService {
 
         sendHtmlMail(to, subject, htmlBody);
     }
+
+    @Async
+    public void sendBillStatus(String username,String to, String orderCode, String status) {
+        String subject = "🎉 Đơn hàng của bạn đã được cập nhật!";
+
+        String htmlBody = "<p>Xin chào <strong>" + username + "</strong>,</p>"
+                + "<p>Chúng tôi xin thông báo rằng <strong>đơn hàng " + orderCode + "</strong> của bạn vừa được <strong>cập nhật trạng thái</strong>.</p>"
+                + "<p><strong>Trạng thái mới:</strong> <span style='color: #28a745;'>" + status + "</span></p>"
+                + "<p>Vui lòng kiểm tra chi tiết đơn hàng của bạn tại trang web của chúng tôi hoặc liên hệ bộ phận chăm sóc khách hàng nếu cần hỗ trợ thêm.</p>"
+                + "<hr/>"
+                + "<p>📞 Hotline: 0396798513</p>"
+                + "<p>🌐 Website: <a href='https://your-website.com'>https://yeu-em-tu-cai-nhin-dau-tien.com</a></p>"
+                + "<p>Cảm ơn bạn đã mua sắm tại <strong>Men T-shirt</strong>!</p>";
+
+        sendHtmlMail(to,subject, htmlBody);
+    }
 }

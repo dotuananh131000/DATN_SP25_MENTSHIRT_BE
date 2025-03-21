@@ -17,6 +17,8 @@ public class HoaDonBanHangResponse {
 
     private String tenKhachHang;
 
+    private String sdtKH;
+
     private String maNhanVien;
 
     private String maHoaDon;

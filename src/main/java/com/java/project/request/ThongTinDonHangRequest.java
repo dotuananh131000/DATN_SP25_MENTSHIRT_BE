@@ -12,6 +12,7 @@ import lombok.Setter;
 public class ThongTinDonHangRequest {
     private String hoTenNguoiNhan;
     private String sdt;
+    private String email;
     private String diaChiNhanHang;
     private Double phiShip;
 }

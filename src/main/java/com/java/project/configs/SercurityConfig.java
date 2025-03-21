@@ -41,7 +41,7 @@ public class SercurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOriginPatterns(List.of("*")); // Cho phép tất cả nguồn )
-                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Các method HTTP được phép
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH")); // Các method HTTP được phép
                     config.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Cho phép gửi token
                     config.setAllowCredentials(true); // Cho phép gửi cookie, token
                     return config;

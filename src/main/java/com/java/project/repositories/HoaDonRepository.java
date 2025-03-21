@@ -173,6 +173,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             select new com.java.project.dtos.HoaDonHomNayResponse(
             hd.id,
             kh.id,
+            kh.soDienThoai,
             pgg.id,
             hd.maHoaDon,
             hd.ngayTao,
@@ -199,6 +200,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
                 select new com.java.project.dtos.HoaDonBanHangResponse(
             hd.id,
             hd.khachHang.tenKhachHang,
+            hd.khachHang.soDienThoai,
             hd.nhanVien.maNhanVien,
             hd.maHoaDon,
             pgg.loaiGiam,

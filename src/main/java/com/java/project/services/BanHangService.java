@@ -33,6 +33,8 @@ public class BanHangService {
     private HoaDonChiTietRepository hoaDonChiTietRepository;
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
+    @Autowired
+    private MailService mailService;
 
     public HoaDon createHoaDon(HoaDonRequest hoaDonRequest){
         KhachHang khachHang = hoaDonRequest.getIdKhachHang() != null
@@ -105,18 +107,28 @@ public class BanHangService {
         if(hoaDon.getTrangThaiGiaoHang() == 8){
             hoaDon.setTrangThai(1);
             hoaDon.setTrangThaiGiaoHang(1);
+            mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
+            ,"Đang chờ xác nhận");
             return hoaDonRepository.save(hoaDon); //Từ tạo hóa đơn sang chờ chờ xác nhận
         }else if(hoaDon.getTrangThaiGiaoHang() == 1){
             hoaDon.setTrangThaiGiaoHang(2);
+            mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
+                    ,"Đã xác nhận");
             return hoaDonRepository.save(hoaDon); //Từ chờ xác nhận, sang xác nhận
         }else if(hoaDon.getTrangThaiGiaoHang() == 2){
             hoaDon.setTrangThaiGiaoHang(3);
+            mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
+                    ,"Đang chờ vận chuyển");
             return hoaDonRepository.save(hoaDon); //Từ xác nhận, sang chờ vận chuyển
         }else if(hoaDon.getTrangThaiGiaoHang() == 3){
             hoaDon.setTrangThaiGiaoHang(4);
+            mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
+                    ,"Đã được vận chuyển");
             return hoaDonRepository.save(hoaDon); //Từ chờ vận chuyển, sang vận chuyển
         }else if(hoaDon.getTrangThaiGiaoHang() == 4){
             hoaDon.setTrangThaiGiaoHang(5);
+            mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
+                    ,"Đơn hàng của bạn đã thành công");
             return hoaDonRepository.save(hoaDon); //Từ vận chuyển sang thành công
         }
         return hoaDonRepository.save(hoaDon);
@@ -356,6 +368,7 @@ public class BanHangService {
 
         hoaDon.setHoTenNguoiNhan(request.getHoTenNguoiNhan());
         hoaDon.setSoDienThoai(request.getSdt());
+        hoaDon.setEmail(request.getEmail());
         hoaDon.setDiaChiNhanHang(request.getDiaChiNhanHang());
         hoaDon.setPhiShip(request.getPhiShip());
         return hoaDonRepository.save(hoaDon);
