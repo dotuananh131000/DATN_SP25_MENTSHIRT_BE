@@ -105,4 +105,31 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     @Query("SELECT s FROM SanPhamChiTiet s WHERE s.sanPham.id = :sanPhamId AND s.trangThai = true")
     List<SanPhamChiTiet> findBySanPhamIdActive(@Param("sanPhamId") Integer sanPhamId);
 
+    @Query("SELECT s FROM SanPhamChiTiet s " +
+            "join SanPham sp on sp.id = s.sanPham.id " +
+            "WHERE (:search IS NULL OR s.sanPham.tenSanPham LIKE %:search% OR s.sanPham.maSanPham LIKE %:search%) " +
+            "AND (:thuongHieuIds IS NULL OR s.thuongHieu.id IN :thuongHieuIds) " +
+            "AND (:xuatXuIds IS NULL OR s.xuatXu.id IN :xuatXuIds) " +
+            "AND (:chatLieuIds IS NULL OR s.chatLieu.id IN :chatLieuIds) " +
+            "AND (:coAoIds IS NULL OR s.coAo.id IN :coAoIds) " +
+            "AND (:tayAoIds IS NULL OR s.tayAo.id IN :tayAoIds) " +
+            "AND (:mauSacIds IS NULL OR s.mauSac.id IN :mauSacIds) " +
+            "AND (:kichThuocIds IS NULL OR s.kichThuoc.id IN :kichThuocIds) " +
+            "AND (:minPrice IS NULL OR s.donGia >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR s.donGia <= :maxPrice)" +
+            "AND sp.trangThai = true " +
+            "AND s.trangThai = true")
+    Page<SanPhamChiTiet> findBySearchAndFilterIsActive(
+            @Param("search") String search,
+            @Param("thuongHieuIds") List<Integer> thuongHieuIds,
+            @Param("xuatXuIds") List<Integer> xuatXuIds,
+            @Param("chatLieuIds") List<Integer> chatLieuIds,
+            @Param("coAoIds") List<Integer> coAoIds,
+            @Param("tayAoIds") List<Integer> tayAoIds,
+            @Param("mauSacIds") List<Integer> mauSacIds,
+            @Param("kichThuocIds") List<Integer> kichThuocIds,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            Pageable pageable);
+
 }

@@ -61,6 +61,39 @@ public class SanPhamChiTietController {
                     .body(new ApiResponse("error", "Có lỗi xảy ra: " + e.getMessage(), null));
         }
     }
+    @GetMapping("/active")
+    public ResponseEntity<ApiResponse>getSPCTActive(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<Integer> thuongHieuIds,
+            @RequestParam(required = false) List<Integer> xuatXuIds,
+            @RequestParam(required = false) List<Integer> chatLieuIds,
+            @RequestParam(required = false) List<Integer> coAoIds,
+            @RequestParam(required = false) List<Integer> tayAoIds,
+            @RequestParam(required = false) List<Integer> mauSacIds,
+            @RequestParam(required = false) List<Integer> kichThuocIds,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            Pageable pageable
+    ){
+        try {
+            if (thuongHieuIds != null && thuongHieuIds.isEmpty()) thuongHieuIds = null;
+            if (xuatXuIds != null && xuatXuIds.isEmpty()) xuatXuIds = null;
+            if (chatLieuIds != null && chatLieuIds.isEmpty()) chatLieuIds = null;
+            if (coAoIds != null && coAoIds.isEmpty()) coAoIds = null;
+            if (tayAoIds != null && tayAoIds.isEmpty()) tayAoIds = null;
+            if (mauSacIds != null && mauSacIds.isEmpty()) mauSacIds = null;
+            if (kichThuocIds != null && kichThuocIds.isEmpty()) kichThuocIds = null;
+
+            Page<SanPhamChiTietDto> result = sanPhamChiTietService.getSPCTActive(
+                    search, thuongHieuIds, xuatXuIds, chatLieuIds, coAoIds, tayAoIds,
+                    mauSacIds, kichThuocIds, minPrice, maxPrice, pageable);
+
+            return ResponseEntity.ok(new ApiResponse("success", "Lấy danh sách chi tiết sản phẩm thành công", result));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("error", "Có lỗi xảy ra: " + e.getMessage(), null));
+        }
+    }
 
 
 

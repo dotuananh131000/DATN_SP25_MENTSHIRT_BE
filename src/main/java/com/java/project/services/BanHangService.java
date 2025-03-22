@@ -101,7 +101,7 @@ public class BanHangService {
         if(idHD == null){
             throw new IllegalArgumentException("Không tìm thấy id");
         }
-        HoaDon  hoaDon = hoaDonRepository.findById(idHD)
+        HoaDon hoaDon = hoaDonRepository.findById(idHD)
                 .orElseThrow(()-> new EntityNotFoundException("Không timg thấy id hóa đơn"+ idHD));
 
         if(hoaDon.getTrangThaiGiaoHang() == 8){

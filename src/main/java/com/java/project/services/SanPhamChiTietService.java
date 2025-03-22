@@ -365,4 +365,19 @@ public class SanPhamChiTietService {
     public List<SanPhamChiTietResponse>getAll(){
         return sanPhamChiTietRepository.getAll();
     }
+
+    public Page<SanPhamChiTietDto>getSPCTActive(
+            String search,
+            List<Integer> thuongHieuIds, List<Integer> xuatXuIds,
+            List<Integer> chatLieuIds, List<Integer> coAoIds, List<Integer> tayAoIds,
+            List<Integer> mauSacIds, List<Integer> kichThuocIds,
+            Double minPrice, Double maxPrice,  // Thêm tham số lọc giá
+            Pageable pageable
+    ){
+        Page<SanPhamChiTiet> sanPhamChiTiets = sanPhamChiTietRepository.findBySearchAndFilterIsActive(
+                search, thuongHieuIds, xuatXuIds, chatLieuIds, coAoIds, tayAoIds,
+                mauSacIds, kichThuocIds, minPrice, maxPrice, pageable);
+
+        return sanPhamChiTiets.map(SanPhamChiTietMapper::toDTO);
+    }
 }
