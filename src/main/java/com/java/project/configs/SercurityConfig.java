@@ -28,9 +28,11 @@ public class SercurityConfig {
 
     // Danh sách các endpoint công khai, không yêu cầu xác thực
     private final String [] PUBLIC_ENPOINTS = {"/api/auth/token", "/api/auth/introspect"
+            ,"/api/auth/token/khach-hang", "/api/auth/introspect/khach-hang"
             , "/san-pham-chi-tiet/thuoc-tinh", "/san-pham-chi-tiet/chi-tiet"
             , "/san-pham", "/api/thuong-hieu", "/api/chat-lieu", "/api/co-ao"
-            , "/api/kich-thuoc", "/api/mau-sac", "/api/tay-ao", "/api/xuat-xu"};
+            , "/api/kich-thuoc", "/api/mau-sac", "/api/tay-ao", "/api/xuat-xu"
+            , "/api/khach-hang/myAccount", "/phieu-giam-gia"};
 
     @NonFinal
     protected static final String SIGN_KEY = ENVConfig.getEnv("JWT_SECRET");
@@ -41,7 +43,7 @@ public class SercurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOriginPatterns(List.of("*")); // Cho phép tất cả nguồn )
-                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH")); // Các method HTTP được phép
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")); // Các method HTTP được phép
                     config.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Cho phép gửi token
                     config.setAllowCredentials(true); // Cho phép gửi cookie, token
                     return config;

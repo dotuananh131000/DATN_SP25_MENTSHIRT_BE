@@ -42,4 +42,21 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/token/khach-hang")
+    public APIRequestOrResponse<AuthenTicationResponse>authenticateCustomer(@RequestBody AuthenticationRequest authenticationRequest){
+        var result = authenticationService.getAuthenTicationCustomer(authenticationRequest);
+        return APIRequestOrResponse.<AuthenTicationResponse>builder()
+                .data(result)
+                .build();
+    }
+
+    @PostMapping("/introspect/khach-hang")
+    public APIRequestOrResponse<IntrospceResponse>authticateCustomer(@RequestBody IntrospecRequest request)
+            throws ParseException, JOSEException {
+        var result = authenticationService.introspce(request);
+        return APIRequestOrResponse.<IntrospceResponse>builder()
+                .data(result)
+                .build();
+    }
+
 }

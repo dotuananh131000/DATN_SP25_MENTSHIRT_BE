@@ -3,7 +3,9 @@ package com.java.project.services;
 import com.java.project.configs.ENVConfig;
 import com.java.project.dtos.AuthenTicationResponse;
 import com.java.project.dtos.IntrospceResponse;
+import com.java.project.entities.KhachHang;
 import com.java.project.entities.NhanVien;
+import com.java.project.repositories.KhachHangRepository;
 import com.java.project.repositories.NhanVienRepository;
 import com.java.project.request.AuthenticationRequest;
 import com.java.project.request.IntrospecRequest;
@@ -37,6 +39,8 @@ public class AuthenticationService {
     protected static final String SIGN_KEY = ENVConfig.getEnv("JWT_SECRET");
 
     NhanVienRepository nhanVienRepository;
+
+    KhachHangRepository khachHangRepository;
 
     public IntrospceResponse introspce(IntrospecRequest introspecRequest) throws JOSEException, ParseException {
         String token = introspecRequest.getToken();
@@ -91,6 +95,42 @@ public class AuthenticationService {
 
     }
 
+    public AuthenTicationResponse getAuthenTicationCustomer(AuthenticationRequest authenticationRequest) {
+        var khachHang = khachHangRepository.findByEmail(authenticationRequest.getEmail())
+                .orElseThrow(()-> new RuntimeException("Email not found"));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        boolean authenticated = passwordEncoder.matches(authenticationRequest.getPassword(), khachHang.getMat_khau());
 
+        if(!authenticated) {
+            throw new RuntimeException("Invalid password");
+        }
+        return AuthenTicationResponse.builder()
+                .token(generateTokenCustomer(khachHang))
+                .authenTicated(authenticated)
+                .build();
+    }
+
+    public String generateTokenCustomer(KhachHang khachHang) {
+        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject(khachHang.getEmail())
+                .issuer("Men-TShirt")
+                .issueTime(new Date())
+//                .claim("scope", "")
+                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
+                .build();
+
+        log.info(jwtClaimsSet.getClaim("scope").toString());
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+        JWSObject jwsObject = new JWSObject(jwsHeader, payload);
+        try{
+            jwsObject.sign(new MACSigner(SIGN_KEY.getBytes()));
+            return jwsObject.serialize();
+        }catch (Exception e){
+            log.error("Cannot sign JWT", e);
+            throw  new RuntimeException(e);
+        }
+
+    }
 
 }
