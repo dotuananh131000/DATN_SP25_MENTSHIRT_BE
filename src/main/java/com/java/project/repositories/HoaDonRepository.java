@@ -41,6 +41,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
                     )
 
                     from HoaDon hd left join KhachHang kh on kh.id = hd.khachHang.id
+                    LEFT JOIN NhanVien nv ON nv.id = hd.nhanVien.id
                     where hd.ngayTao >= :startDate AND hd.ngayTao < :endDate
                             and (:loaiDon IS NULL OR hd.loaiDon = :loaiDon)
                     order by hd.ngayTao ASC 
@@ -71,6 +72,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             hd.trangThai
                 ) 
             from HoaDon hd left join KhachHang kh on kh.id = hd.khachHang.id
+            LEFT JOIN NhanVien nv ON nv.id = hd.nhanVien.id
             where CAST(hd.ngayTao AS DATE ) = CURRENT_DATE 
             and (:loaiDon IS NULL OR hd.loaiDon = :loaiDon)
             order by hd.ngayTao ASC 
@@ -101,6 +103,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             hd.trangThai
                 ) 
             from HoaDon hd left join KhachHang kh on kh.id = hd.khachHang.id
+            LEFT JOIN NhanVien nv ON nv.id = hd.nhanVien.id
             where (:trangThaiGiaoHang IS NULL OR hd.trangThaiGiaoHang = :trangThaiGiaoHang)
             and (:keyword IS NULL OR LOWER(hd.maHoaDon) LIKE LOWER(CONCAT('%', :keyword, '%'))
             OR LOWER(kh.tenKhachHang) LIKE LOWER(CONCAT('%', :keyword, '%'))
@@ -137,7 +140,8 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             hd.ngayTao,
             hd.trangThai
                 ) 
-            from HoaDon hd
+            from HoaDon hd left join KhachHang kh on kh.id = hd.khachHang.id
+            left join NhanVien nv on nv.id = hd.nhanVien.id
             where (:trangThaiGiaoHang IS NULL OR hd.trangThaiGiaoHang = :trangThaiGiaoHang)
             and (:keyword IS NULL OR LOWER(hd.maHoaDon) LIKE LOWER(CONCAT('%', :keyword, '%'))
             OR LOWER(hd.khachHang.tenKhachHang) LIKE LOWER(CONCAT('%', :keyword, '%'))
@@ -191,6 +195,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             hd.loaiDon
             )from HoaDon hd left join KhachHang kh on hd.khachHang.id = kh.id
             left join PhieuGiamGia pgg on hd.phieuGiamGia.id = pgg.id
+            left join NhanVien nv on hd.nhanVien.id = nv.id
             where cast(hd.ngayTao as date ) = cast(current_date as date ) 
             and hd.trangThaiGiaoHang =8
             """)
