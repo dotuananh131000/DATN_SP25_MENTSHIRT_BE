@@ -2,6 +2,7 @@ package com.java.project.controllers;
 
 import com.java.project.dtos.ApiResponse;
 import com.java.project.dtos.KhachHangDto;
+import com.java.project.dtos.NhanVienDto;
 import com.java.project.exceptions.RuntimeException;
 import com.java.project.models.KhachHangCreateModel;
 import com.java.project.models.KhachHangUpdateModel;
@@ -130,6 +131,17 @@ public class KhachHangConroller {
                 .map(error -> error.getDefaultMessage())
                 .collect(Collectors.toList());
         return new ApiResponse("error", "Dữ liệu không hợp lệ", errors);
+    }
+
+    @GetMapping("/myAccount")
+    public ResponseEntity<ApiResponse>getMyAcount(){
+        try{
+            KhachHangDto khachHangDto = khachHangService.getMyInfo();
+            return ResponseEntity.ok(
+                    new ApiResponse("success", "Lấy thông tin tài khoản thành công", khachHangDto));
+        }catch (ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("error", e.getMessage(), null));
+        }
     }
 
 }
