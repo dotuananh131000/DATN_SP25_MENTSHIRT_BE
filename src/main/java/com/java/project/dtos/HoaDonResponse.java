@@ -24,19 +24,11 @@ public class HoaDonResponse {
 
     private Integer loaiDon;
 
-    private String ghiChu;
-
-    private String hoTenNguoiNhan;
-
     private String soDienThoai;
 
     private String email;
 
     private String diaChiNhanHang;
-
-    private LocalDate ngayNhanMongMuon;
-
-    private LocalDate ngayDuKienNhan;
 
     private Integer trangThaiGiaoHang;
 
