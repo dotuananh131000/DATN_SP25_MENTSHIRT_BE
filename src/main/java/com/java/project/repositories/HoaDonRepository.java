@@ -19,144 +19,24 @@ import java.util.Optional;
 
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
-    @Query("""
-                    select new com.java.project.dtos.HoaDonResponse(
-                    hd.id,
-                    hd.khachHang.tenKhachHang,
-                    hd.nhanVien.maNhanVien,
-                    hd.maHoaDon,
-                    hd.loaiDon,
-                    hd.ghiChu,
-                    hd.hoTenNguoiNhan,
-                    hd.soDienThoai,
-                    hd.email,
-                    hd.diaChiNhanHang,
-                    hd.ngayNhanMongMuon,
-                    hd.ngayDuKienNhan,
-                    hd.trangThaiGiaoHang,
-                    hd.phiShip,
-                    hd.tongTien,
-                    hd.ngayTao,
-                    hd.trangThai
-                    )
 
-                    from HoaDon hd left join KhachHang kh on kh.id = hd.khachHang.id
-                    LEFT JOIN NhanVien nv ON nv.id = hd.nhanVien.id
-                    where hd.ngayTao >= :startDate AND hd.ngayTao < :endDate
-                            and (:loaiDon IS NULL OR hd.loaiDon = :loaiDon)
-                    order by hd.ngayTao ASC 
-            """)
-    List<HoaDonResponse> getAll(
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
-            @Param("loaiDon") Integer loaiDon);
+    @Query("SELECT hd FROM  HoaDon hd " +
+            "LEFT JOIN KhachHang kh ON hd.khachHang.id = kh.id " +
+            "LEFT JOIN NhanVien nv ON hd.nhanVien.id = nv.id " +
+            "LEFT JOIN PhieuGiamGia pgg ON hd.phieuGiamGia.id = pgg.id " +
+            "WHERE (:ngayBatDau IS NULL OR CAST(hd.ngayTao AS DATE) >= :ngayBatDau) " +
+            "AND (:ngayKetThuc IS NULL OR CAST(hd.ngayTao AS DATE) <= :ngayKetThuc) " +
+            "AND (:keyword IS NULL OR LOWER(hd.maHoaDon) LIKE LOWER(CONCAT('%', :keyword , '%' ))) " +
+            "AND (:trangThaiGiaoHang IS NULL OR hd.trangThaiGiaoHang = :trangThaiGiaoHang) " +
+            "AND (:loaiDon IS NULL OR hd.loaiDon = :loaiDon) " +
+            "ORDER BY hd.ngayTao ASC ")
+    Page<HoaDon>getListHoaDon(Pageable pageable,
+                          @Param("ngayBatDau") LocalDate ngayBatDau,
+                          @Param("ngayKetThuc") LocalDate ngayKetThuc,
+                          @Param("keyword") String keyword,
+                          @Param("loaiDon") Integer loaiDon,
+                          @Param("trangThaiGiaoHang") Integer trangThaiGiaoHang);
 
-    @Query("""
-                select new com.java.project.dtos.HoaDonResponse(
-            hd.id,
-            hd.khachHang.tenKhachHang,
-            hd.nhanVien.maNhanVien,
-            hd.maHoaDon,
-            hd.loaiDon,
-            hd.ghiChu,
-            hd.hoTenNguoiNhan,
-            hd.soDienThoai,
-            hd.email,
-            hd.diaChiNhanHang,
-            hd.ngayNhanMongMuon,
-            hd.ngayDuKienNhan,
-            hd.trangThaiGiaoHang,
-            hd.phiShip,
-            hd.tongTien,
-            hd.ngayTao,
-            hd.trangThai
-                ) 
-            from HoaDon hd left join KhachHang kh on kh.id = hd.khachHang.id
-            LEFT JOIN NhanVien nv ON nv.id = hd.nhanVien.id
-            where CAST(hd.ngayTao AS DATE ) = CURRENT_DATE 
-            and (:loaiDon IS NULL OR hd.loaiDon = :loaiDon)
-            order by hd.ngayTao ASC 
-                """)
-    Page<HoaDonResponse> getPhanTrang(Pageable pageable,
-                                      @Param("startDate") LocalDateTime startDate,
-                                      @Param("endDate") LocalDateTime endDate,
-                                      @Param("loaiDon") Integer loaiDon);
-
-    @Query("""
-                select new com.java.project.dtos.HoaDonResponse(
-            hd.id,
-             hd.khachHang.tenKhachHang,
-            hd.nhanVien.maNhanVien,
-            hd.maHoaDon,
-            hd.loaiDon,
-            hd.ghiChu,
-            hd.hoTenNguoiNhan,
-            hd.soDienThoai,
-            hd.email,
-            hd.diaChiNhanHang,
-            hd.ngayNhanMongMuon,
-            hd.ngayDuKienNhan,
-            hd.trangThaiGiaoHang,
-            hd.phiShip,
-            hd.tongTien,
-            hd.ngayTao,
-            hd.trangThai
-                ) 
-            from HoaDon hd left join KhachHang kh on kh.id = hd.khachHang.id
-            LEFT JOIN NhanVien nv ON nv.id = hd.nhanVien.id
-            where (:trangThaiGiaoHang IS NULL OR hd.trangThaiGiaoHang = :trangThaiGiaoHang)
-            and (:keyword IS NULL OR LOWER(hd.maHoaDon) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(kh.tenKhachHang) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(hd.nhanVien.maNhanVien) LIKE LOWER(CONCAT('%', :keyword, '%')))
-            and (:ngayBatDau IS NULL OR CAST(hd.ngayTao AS DATE ) >=  :ngayBatDau)
-            and (:ngayKetThuc IS NULL OR  CAST(hd.ngayTao AS DATE ) <=  :ngayKetThuc)
-            and (:loaiDon IS NULL OR hd.loaiDon = :loaiDon)
-            order by hd.ngayTao ASC 
-                """)
-    Page<HoaDonResponse> getPhanTrangSearch(Pageable pageable,
-                                            @Param("trangThaiGiaoHang") Integer trangThaiGiaoHang,
-                                            @Param("keyword") String keyword,
-                                            @Param("ngayBatDau") LocalDate ngayBatDau,
-                                            @Param("ngayKetThuc") LocalDate ngayKetThuc,
-                                            @Param("loaiDon") Integer loaiDon);
-
-    @Query("""
-                select new com.java.project.dtos.HoaDonResponse(
-            hd.id,
-            hd.khachHang.tenKhachHang,
-            hd.nhanVien.maNhanVien,
-            hd.maHoaDon,
-            hd.loaiDon,
-            hd.ghiChu,
-            hd.hoTenNguoiNhan,
-            hd.soDienThoai,
-            hd.email,
-            hd.diaChiNhanHang,
-            hd.ngayNhanMongMuon,
-            hd.ngayDuKienNhan,
-            hd.trangThaiGiaoHang,
-            hd.phiShip,
-            hd.tongTien,
-            hd.ngayTao,
-            hd.trangThai
-                ) 
-            from HoaDon hd left join KhachHang kh on kh.id = hd.khachHang.id
-            left join NhanVien nv on nv.id = hd.nhanVien.id
-            where (:trangThaiGiaoHang IS NULL OR hd.trangThaiGiaoHang = :trangThaiGiaoHang)
-            and (:keyword IS NULL OR LOWER(hd.maHoaDon) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(hd.khachHang.tenKhachHang) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(hd.nhanVien.maNhanVien) LIKE LOWER(CONCAT('%', :keyword, '%')))
-            and (:ngayBatDau IS NULL OR CAST(hd.ngayTao AS DATE ) >=  :ngayBatDau)
-            and (:ngayKetThuc IS NULL OR CAST(hd.ngayTao AS DATE ) <=  :ngayKetThuc)
-            and (:loaiDon IS NULL OR hd.loaiDon = :loaiDon)
-            order by hd.ngayTao ASC 
-                """)
-    List<HoaDonResponse> getSearchAll(
-            @Param("trangThaiGiaoHang") Integer trangThaiGiaoHang,
-            @Param("keyword") String keyword,
-            @Param("ngayBatDau") LocalDate ngayBatDau,
-            @Param("ngayKetThuc") LocalDate ngayKetThuc,
-            @Param("loaiDon") Integer loaiDon);
 
     @Query("""
                 SELECT hd.trangThaiGiaoHang, COUNT(hd) 

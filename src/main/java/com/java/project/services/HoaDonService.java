@@ -3,7 +3,12 @@ package com.java.project.services;
 import com.java.project.dtos.HoaDonBanHangResponse;
 import com.java.project.dtos.HoaDonHomNayResponse;
 import com.java.project.dtos.HoaDonResponse;
+import com.java.project.entities.HoaDon;
+import com.java.project.mappers.HoaDonMapper;
 import com.java.project.repositories.HoaDonRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,38 +22,27 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class HoaDonService {
-    @Autowired
     HoaDonRepository hoaDonRepository;
+
+    HoaDonMapper hoaDonMapper;
 
     LocalDateTime startDate = LocalDate.now().atStartOfDay();
     LocalDateTime endDate = startDate.plusDays(1);
 
-    public List<HoaDonResponse> getAllHoaDon(Integer loaiDon) {
 
-        return hoaDonRepository.getAll(startDate,endDate,loaiDon);
-    }
-
-    public Page<HoaDonResponse> GetPhanTrangHoaDon(Pageable pageable, Integer loaiDon) {
-        return hoaDonRepository.getPhanTrang(pageable,startDate,endDate, loaiDon);
-    }
-
-    public List<HoaDonResponse> getAllSearch(Integer trangThaiGiaoHang,
-                                             String keyword,
+    public Page<HoaDonResponse>getHoaDonList(Pageable pageable,
                                              LocalDate ngayBatDau,
                                              LocalDate ngayKetThuc,
-                                             Integer loaiDon) {
-        return hoaDonRepository.getSearchAll(trangThaiGiaoHang, keyword, ngayBatDau, ngayKetThuc, loaiDon);
+                                             String keyword,
+                                             Integer loaiDon,
+                                             Integer trangThaiGiaoHang) {
+        return hoaDonRepository.getListHoaDon(pageable,ngayBatDau, ngayKetThuc,keyword,loaiDon,trangThaiGiaoHang)
+                .map(hoaDonMapper::toHoaDonResponse);
     }
 
-    public Page<HoaDonResponse> getPhanTrangSearch(Pageable pageable,
-                                                   Integer trangThaiGiaoHang,
-                                                   String keyword,
-                                                   LocalDate ngayBatDau,
-                                                   LocalDate ngayKetThuc,
-                                                   Integer loaiDon) {
-        return hoaDonRepository.getPhanTrangSearch(pageable, trangThaiGiaoHang, keyword, ngayBatDau, ngayKetThuc, loaiDon);
-    }
 
     public Map<String, Long> getOrderCounts(
             LocalDate ngayBatDau, LocalDate ngayKetThuc,
