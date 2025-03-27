@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 public class HoaDonResponse {
     private Integer id;
 
+    private String maKhachHang;
+
     private String tenKhachHang;
 
     private String maNhanVien;
@@ -23,6 +25,8 @@ public class HoaDonResponse {
     private String maHoaDon;
 
     private Integer loaiDon;
+
+    private String hoTenNguoiNhan;
 
     private String soDienThoai;
 
@@ -33,6 +37,12 @@ public class HoaDonResponse {
     private Integer trangThaiGiaoHang;
 
     private Double phiShip;
+
+    private Integer hinhThucGiamGia;
+
+    private Double soTienGiamToiDa;
+
+    private Double giaTriGiam;
 
     private Double tongTien;
 

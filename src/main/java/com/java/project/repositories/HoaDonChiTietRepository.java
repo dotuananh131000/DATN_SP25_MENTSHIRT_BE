@@ -2,6 +2,8 @@ package com.java.project.repositories;
 
 import com.java.project.dtos.HoaDonChiTietResponse;
 import com.java.project.entities.HoaDonChiTiet;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,5 +39,9 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
 
     @Query("select hdct.hoaDon.id, count(hdct) from HoaDonChiTiet hdct group by hdct.hoaDon.id")
     List<Object[]> getHoaDonChiTietCount();
+
+//    @Query("SELECT hdct FROM HoaDonChiTiet hdct " +
+//            "WHERE hdct.hoaDon.id = :idHD")
+//    Page<HoaDonChiTiet>getHoaDonChiTiet(Pageable pageable, @Param("idHD") Integer idHD);
 
 }
