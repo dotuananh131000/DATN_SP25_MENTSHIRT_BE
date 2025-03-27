@@ -6,6 +6,7 @@ import com.java.project.dtos.HoaDonResponse;
 import com.java.project.entities.HoaDon;
 import com.java.project.mappers.HoaDonMapper;
 import com.java.project.repositories.HoaDonRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -41,6 +42,11 @@ public class HoaDonService {
                                              Integer trangThaiGiaoHang) {
         return hoaDonRepository.getListHoaDon(pageable,ngayBatDau, ngayKetThuc,keyword,loaiDon,trangThaiGiaoHang)
                 .map(hoaDonMapper::toHoaDonResponse);
+    }
+
+    public HoaDonResponse getHoaDonById(Integer id) {
+        var HoaDon = hoaDonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hóa đơn"));
+        return hoaDonMapper.toHoaDonResponse(HoaDon) ;
     }
 
 

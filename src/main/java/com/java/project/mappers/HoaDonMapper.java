@@ -9,5 +9,10 @@ import org.mapstruct.Mapping;
 public interface HoaDonMapper {
     @Mapping(source = "nhanVien.maNhanVien", target = "maNhanVien")
     @Mapping(source = "khachHang.tenKhachHang", target = "tenKhachHang")
+    @Mapping(source = "khachHang.maKhachHang", target = "maKhachHang")
+    @Mapping(source = "phieuGiamGia.giaTriGiam", target = "giaTriGiam")
+    @Mapping(source = "phieuGiamGia.hinhThucGiamGia", target = "hinhThucGiamGia")
+    @Mapping(source = "phieuGiamGia.soTienGiamToiDa", target = "soTienGiamToiDa")
+    @Mapping(source = "hoTenNguoiNhan", target = "hoTenNguoiNhan")
     HoaDonResponse toHoaDonResponse(HoaDon hoaDon);
 }

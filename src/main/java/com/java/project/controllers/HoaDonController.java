@@ -2,6 +2,10 @@ package com.java.project.controllers;
 
 import com.java.project.dtos.HoaDonBanHangResponse;
 import com.java.project.dtos.HoaDonResponse;
+import com.java.project.entities.HoaDon;
+import com.java.project.mappers.HoaDonMapper;
+import com.java.project.repositories.HoaDonChiTietRepository;
+import com.java.project.repositories.HoaDonRepository;
 import com.java.project.request.APIRequestOrResponse;
 import com.java.project.services.HoaDonService;
 import lombok.AccessLevel;
@@ -28,8 +32,11 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HoaDonController {
 
-    @Autowired
     HoaDonService hoaDonService;
+
+    HoaDonRepository hoaDonRepository;
+
+    HoaDonMapper hoaDonMapper;
 
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -58,6 +65,14 @@ public class HoaDonController {
                 .build();
     }
 
+    @GetMapping("/{id}")
+    public APIRequestOrResponse<HoaDonResponse>getHoaDonById(@PathVariable("id") Integer id){
+        HoaDonResponse hoaDon = hoaDonService.getHoaDonById(id);
+        return APIRequestOrResponse.<HoaDonResponse>builder()
+                .data(hoaDon)
+                .build();
+    }
+
     @GetMapping("/count")
     public ResponseEntity<Map<String, Long>> getOrderCounts(
             @RequestParam(required = false) String ngayBatDau,
@@ -78,13 +93,9 @@ public class HoaDonController {
         return ResponseEntity.ok(counts);
     }
 
-    @GetMapping("/{maHoaDon}")
-    public ResponseEntity<HoaDonBanHangResponse> getHoaDonByMaHoaDon(@PathVariable String maHoaDon) {
-        Optional<HoaDonBanHangResponse>hoaDon = hoaDonService.getHoaDonByMaHoaDon(maHoaDon);
-        if(hoaDon.isPresent()) {
-            return ResponseEntity.ok(hoaDon.get());
-        }else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/{idHD}/hoa-don")
+    public HoaDonResponse getHoaDonByMaHoaDon(@PathVariable Integer idHD) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHD).orElse(null);
+       return hoaDonMapper.toHoaDonResponse(hoaDon);
     }
 }
