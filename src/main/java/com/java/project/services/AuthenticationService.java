@@ -116,11 +116,12 @@ public class AuthenticationService {
                 .subject(khachHang.getEmail())
                 .issuer("Men-TShirt")
                 .issueTime(new Date())
-//                .claim("scope", "")
+                .claim("scope", "CLIENT")
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
                 .build();
 
         log.info(jwtClaimsSet.getClaim("scope").toString());
+
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(jwsHeader, payload);
         try{
