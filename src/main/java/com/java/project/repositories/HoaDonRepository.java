@@ -37,6 +37,15 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
                           @Param("loaiDon") Integer loaiDon,
                           @Param("trangThaiGiaoHang") Integer trangThaiGiaoHang);
 
+    @Query("SELECT hd FROM  HoaDon hd " +
+            "LEFT JOIN KhachHang kh ON hd.khachHang.id = kh.id " +
+            "LEFT JOIN NhanVien nv ON hd.nhanVien.id = nv.id " +
+            "LEFT JOIN PhieuGiamGia pgg ON hd.phieuGiamGia.id = pgg.id " +
+            "WHERE hd.khachHang.id = :id " +
+            "AND hd.loaiDon = 0 " +
+            "ORDER BY hd.ngayTao DESC ")
+    Page<HoaDon>getListHoaDonByIdKH(Pageable pageable, @Param("id") Integer id);
+
 
     @Query("""
                 SELECT hd.trangThaiGiaoHang, COUNT(hd) 

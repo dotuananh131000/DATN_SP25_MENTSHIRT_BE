@@ -66,10 +66,23 @@ public class HoaDonController {
     }
 
     @GetMapping("/{id}")
-    public APIRequestOrResponse<HoaDonResponse>getHoaDonById(@PathVariable("id") Integer id){
+    public APIRequestOrResponse<HoaDonResponse>getHoaDonById(
+            @PathVariable("id") Integer id){
         HoaDonResponse hoaDon = hoaDonService.getHoaDonById(id);
         return APIRequestOrResponse.<HoaDonResponse>builder()
                 .data(hoaDon)
+                .build();
+    }
+    @GetMapping("/khach-hang/{id}")
+    public APIRequestOrResponse<Page<HoaDonResponse>>getHoaDonKhachHangById(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @PathVariable("id") Integer id){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<HoaDonResponse> hoaDons =
+                hoaDonService.getHoaDonByIdKhachHang(pageable, id);
+        return APIRequestOrResponse. <Page<HoaDonResponse>>builder()
+                .data(hoaDons)
                 .build();
     }
 

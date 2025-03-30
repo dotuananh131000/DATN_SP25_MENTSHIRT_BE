@@ -49,6 +49,10 @@ public class HoaDonService {
         return hoaDonMapper.toHoaDonResponse(HoaDon) ;
     }
 
+    public Page<HoaDonResponse>getHoaDonByIdKhachHang(Pageable pageable, Integer id){
+        return hoaDonRepository.getListHoaDonByIdKH(pageable, id).map(hoaDonMapper::toHoaDonResponse);
+    }
+
 
     public Map<String, Long> getOrderCounts(
             LocalDate ngayBatDau, LocalDate ngayKetThuc,
