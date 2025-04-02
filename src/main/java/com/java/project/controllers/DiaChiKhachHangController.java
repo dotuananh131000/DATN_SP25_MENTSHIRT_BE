@@ -5,6 +5,7 @@ import com.java.project.dtos.DiaChiKhachHangDto;
 import com.java.project.exceptions.EntityNotFoundException;
 import com.java.project.models.DiaChiKhachHangCreateModel;
 import com.java.project.models.DiaChiKhachHangUpdateModel;
+import com.java.project.request.APIRequestOrResponse;
 import com.java.project.services.DiaChiKhachHangService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,17 @@ public class DiaChiKhachHangController {
         List<DiaChiKhachHangDto> diaChiKhachHangDtos = diaChiKhachHangService.getByKhachHangId(khachHangId);
         return ResponseEntity.ok(new ApiResponse("success", "Danh sách địa chỉ khách hàng", diaChiKhachHangDtos));
     }
+
+    //Đặt địa chỉ thành địa chỉ mặc định và câp nhật lại danh sách địa chỉ
+    @PutMapping("/set-default/{id}")
+    public APIRequestOrResponse<String> setDefaulDiaChi(@PathVariable("id") Integer id) {
+        String thongBao = "Đã đặt địa chỉ làm mặc định";
+        diaChiKhachHangService.setDefaultDiaChi(id);
+        return APIRequestOrResponse .<String>builder()
+                .data(thongBao)
+                .build();
+    }
+
 
     @PostMapping
     public ResponseEntity<ApiResponse> create(@Valid @RequestBody DiaChiKhachHangCreateModel model, BindingResult bindingResult) {

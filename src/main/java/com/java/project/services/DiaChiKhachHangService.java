@@ -40,6 +40,22 @@ public class DiaChiKhachHangService {
     }
 
     @Transactional
+    public void setDefaultDiaChi (Integer idDiaChi){
+        DiaChiKhachHang defaultDiaChi = diaChiKhachHangRepository.findById(idDiaChi)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy địa chỉ"));
+        //Lấy danh sách địa chỉ khách hàng
+        List<DiaChiKhachHang> listDiaChi = diaChiKhachHangRepository
+                .findByKhachHangId(defaultDiaChi.getKhachHang().getId());
+
+        //Cập nhật địa ch làm địa chỉ mặc định
+        for(DiaChiKhachHang dc : listDiaChi){
+            dc.setTrangThai(dc.getId().equals(idDiaChi));
+        }
+        //Cập nhật danh sách địa chỉ
+        diaChiKhachHangRepository.saveAll(listDiaChi);
+    }
+
+    @Transactional
     public DiaChiKhachHangDto create(DiaChiKhachHangCreateModel model) {
         KhachHang khachHang = khachHangRepository.findById(model.getKhachHangId())
                 .orElseThrow(() -> new EntityNotFoundException("Khách hàng không tồn tại"));
@@ -54,7 +70,18 @@ public class DiaChiKhachHangService {
         diaChiKhachHang.setPhuongXa(model.getPhuongXa());
         diaChiKhachHang.setDiaChiChiTiet(model.getDiaChiChiTiet());
         diaChiKhachHang.setNgayTao(Instant.now());
-        diaChiKhachHang.setTrangThai(true);
+        if(model.getTrangThai()){
+            //Lấy danh sách địa chỉ khách hàng
+            List<DiaChiKhachHang> listDiaChi = diaChiKhachHangRepository
+                    .findByKhachHangId(model.getKhachHangId());
+
+            //Cập nhật địa ch làm địa chỉ mặc định
+            for(DiaChiKhachHang dc : listDiaChi){
+                dc.setTrangThai(false);
+            }
+            diaChiKhachHang.setTrangThai(model.getTrangThai());
+        }
+
 
         diaChiKhachHang = diaChiKhachHangRepository.save(diaChiKhachHang);
         return DiaChiKhachHangMapper.toDTO(diaChiKhachHang);
@@ -71,6 +98,17 @@ public class DiaChiKhachHangService {
         diaChiKhachHang.setPhuongXaId(model.getPhuongXaId());
         diaChiKhachHang.setPhuongXa(model.getPhuongXa());
         diaChiKhachHang.setDiaChiChiTiet(model.getDiaChiChiTiet());
+        if(model.getTrangThai()){
+            //Lấy danh sách địa chỉ khách hàng
+            List<DiaChiKhachHang> listDiaChi = diaChiKhachHangRepository
+                    .findByKhachHangId(diaChiKhachHang.getKhachHang().getId());
+
+            //Cập nhật địa ch làm địa chỉ mặc định
+            for(DiaChiKhachHang dc : listDiaChi){
+                dc.setTrangThai(false);
+            }
+            diaChiKhachHang.setTrangThai(model.getTrangThai());
+        }
 
         diaChiKhachHang = diaChiKhachHangRepository.save(diaChiKhachHang);
         return DiaChiKhachHangMapper.toDTO(diaChiKhachHang);

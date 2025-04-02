@@ -34,4 +34,6 @@ public class DiaChiKhachHangCreateModel {
     @NotBlank(message = "Địa chỉ chi tiết không được để trống")
     @Size(max = 255, message = "Địa chỉ chi tiết không được vượt quá 255 ký tự")
     private String diaChiChiTiet;
+
+    private Boolean trangThai;
 }
