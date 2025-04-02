@@ -10,6 +10,7 @@ import com.java.project.entities.PhieuGiamGiaKhachHang;
 import com.java.project.repositories.KhachHangRepository;
 import com.java.project.repositories.PhieuGiamGiaKhachHangRepository;
 import com.java.project.repositories.PhieuGiamGiaRepository;
+import com.java.project.request.APIRequestOrResponse;
 import com.java.project.request.HoaDonChiTietRequest;
 import com.java.project.request.HoaDonRequest;
 import com.java.project.request.ThongTinDonHangRequest;
@@ -97,6 +98,15 @@ public class BanHangController {
         }catch (Exception e){
             return new ResponseEntity<>(hoaDonUpdate, HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PutMapping("/choosePGG/{idHD}")
+    public APIRequestOrResponse<String> ChoosePhieuGiamGia(
+            @PathVariable("idHD") Integer idHD, @RequestBody Integer idPGG){
+        HoaDon hoaDon = banHangService.choosePhieuGiamGia(idHD, idPGG);
+        return APIRequestOrResponse.<String>builder()
+                .data("Đã cập nhật phiếu giảm giá")
+                .build();
     }
 
     @PutMapping("/update-loai-don-online/{id}")

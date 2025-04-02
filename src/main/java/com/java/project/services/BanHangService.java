@@ -1,6 +1,7 @@
 package com.java.project.services;
 
 import com.java.project.dtos.PhieuGiamGiaKhachHangResponse;
+import com.java.project.dtos.PhieuGiamGiaResponse;
 import com.java.project.entities.*;
 import com.java.project.helper.HoaDonHelper;
 import com.java.project.repositories.*;
@@ -281,6 +282,22 @@ public class BanHangService {
         return hoaDonRepository.save(hoaDon);
     }
 
+    @Transactional
+    public HoaDon choosePhieuGiamGia(Integer idHD, Integer idPGG){
+        HoaDon hoaDon = hoaDonRepository.findById(idHD)
+                .orElseThrow(()-> new EntityNotFoundException("Không tìm thấy hóa đơn với id"+ idHD));
+        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById(idPGG)
+                .orElseThrow(() -> new EntityNotFoundException(("Không tìm thấy phiếu giảm giá")));
+
+        Integer idPGGPrev = hoaDon.getPhieuGiamGia() != null ? hoaDon.getPhieuGiamGia().getId():null;
+        if(idPGGPrev != null){
+            updateSoLuongPhieuGiamGiaKhiKoSD(hoaDon.getPhieuGiamGia().getId());
+        }
+
+        hoaDon.setPhieuGiamGia(phieuGiamGia);
+        return hoaDonRepository.save(hoaDon);
+    }
+
     private void updateSoLuongPhieuGiamGiaKhiSD(Integer idPGG){
         if(idPGG != null){
         PhieuGiamGia pgg = phieuGiamGiaRepository.findById(idPGG)
@@ -309,7 +326,7 @@ public class BanHangService {
 
         // Kiểm tra và lọc phiếu giảm giá cá nhân
         for (PhieuGiamGiaKhachHangResponse pggkh : listPGGCaNhan) {
-            Double discount = calculateDiscount(tongTien, pggkh.getSoTienToiThieu(), pggkh.getHinhThucGiamGia(), pggkh.getGiaTriGiam(), pggkh.getSoTienToiDa());
+            Double discount = calculateDiscount(tongTien, pggkh.getSoTienToiThieu(), pggkh.getHinhThucGiamGia(), pggkh.getGiaTriGiam(), pggkh.getSoTienGiamToiDa());
             // Kiểm tra nếu discount lớn hơn giá trị giảm hiện tại
             if (discount > giamGia) {
                 giamGia = discount;

@@ -37,7 +37,7 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
 
     List<HoaDonChiTiet>findByHoaDon_Id(Integer idHoaDon);
 
-    @Query("select hdct.hoaDon.id, count(hdct) from HoaDonChiTiet hdct group by hdct.hoaDon.id")
+    @Query("select hdct.hoaDon.id, count(hdct.id) from HoaDonChiTiet hdct group by hdct.hoaDon.id")
     List<Object[]> getHoaDonChiTietCount();
 
 //    @Query("SELECT hdct FROM HoaDonChiTiet hdct " +
