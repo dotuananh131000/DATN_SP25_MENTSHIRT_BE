@@ -33,7 +33,8 @@ public class SercurityConfig {
             , "/san-pham", "/api/thuong-hieu", "/api/chat-lieu", "/api/co-ao"
             , "/api/kich-thuoc", "/api/mau-sac", "/api/tay-ao", "/api/xuat-xu"
             , "/api/khach-hang/myAccount", "/phieu-giam-gia", "/creatOrder"
-            , "/api/hoa-don/khach-hang/{id}"};
+            , "/api/hoa-don/khach-hang/{id}", "/api/dia-chi/khach-hang/{khachHangId}"
+            , "/api/dia-chi/set-default/{id}", "/api/dia-chi", "/api/dia-chi/{id}"};
 
     @NonFinal
     protected static final String SIGN_KEY = ENVConfig.getEnv("JWT_SECRET");
