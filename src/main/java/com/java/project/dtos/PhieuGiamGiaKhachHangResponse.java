@@ -15,11 +15,11 @@ public class PhieuGiamGiaKhachHangResponse {
     private Integer id;
     private Integer idKH;
     private Integer idPGG;
-    private String maPGG;
+    private String maPhieuGiamGia;
     private String tenPhieuGiamGia;
     private Double giaTriGiam;
     private Double soTienToiThieu;
-    private Double soTienToiDa;
+    private Double soTienGiamToiDa;
     private Integer loaiGiam;
     private Integer hinhThucGiamGia;
     private LocalDateTime ngayKetThuc;

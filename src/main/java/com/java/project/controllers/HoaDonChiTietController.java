@@ -30,6 +30,8 @@ public class HoaDonChiTietController {
         return banHangService.getHoaDonChiTietCount();
     }
 
+
+
 //    @GetMapping("/ht/{idHD}&&{idSPCT}")
 //    public Optional<HoaDonChiTiet> getHDCT(@PathVariable int idHD, @PathVariable int idSPCT){
 //        return hoaDonChiTietRepository.findByHoaDon_IdAndSanPhamChiTiet_Id(idHD,idSPCT);
