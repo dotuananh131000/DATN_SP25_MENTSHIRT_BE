@@ -8,6 +8,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -21,7 +22,7 @@ public class LichSuHoaDon {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_hoa_don")
-    private HoaDon idHoaDon;
+    private HoaDon hoaDon;
 
     @Size(max = 255)
     @Nationalized
@@ -33,9 +34,8 @@ public class LichSuHoaDon {
     @Column(name = "nguoi_thay_doi")
     private String nguoiThayDoi;
 
-    @ColumnDefault("CONVERT([date],getdate())")
     @Column(name = "thoi_gian_thay_doi")
-    private LocalDate thoiGianThayDoi;
+    private LocalDateTime thoiGianThayDoi;
 
     @Size(max = 255)
     @Nationalized
