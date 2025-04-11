@@ -7,6 +7,8 @@ import com.java.project.exceptions.ResourceNotFoundException;
 import com.java.project.exceptions.RuntimeException;
 import com.java.project.models.NhanVienCreateModel;
 import com.java.project.models.NhanVienUpdateModel;
+import com.java.project.request.APIRequestOrResponse;
+import com.java.project.request.ChangPasswordRequest;
 import com.java.project.services.NhanVienService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -72,6 +74,15 @@ public class NhanVienController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("error", e.getMessage(), null));
         }
+    }
+
+    @PutMapping("/changePassword/{id}")
+    public APIRequestOrResponse<NhanVienDto> changePassword(@PathVariable("id") Integer id,
+                                                              @Valid @RequestBody ChangPasswordRequest request){
+        NhanVienDto nhanVienDto = nhanVienService.changePassword(id, request);
+        return APIRequestOrResponse.<NhanVienDto>builder()
+                .data(nhanVienDto)
+                .build();
     }
 
     @PutMapping("/{id}")
