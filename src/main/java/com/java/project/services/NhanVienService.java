@@ -4,13 +4,16 @@ import com.java.project.dtos.NhanVienDto;
 import com.java.project.entities.NhanVien;
 import com.java.project.entities.VaiTro;
 import com.java.project.exceptions.EntityAlreadyExistsException;
+import com.java.project.exceptions.EntityNotFoundException;
 import com.java.project.exceptions.ResourceNotFoundException;
 import com.java.project.exceptions.RuntimeException;
+import com.java.project.helper.NhanVienHelper;
 import com.java.project.mappers.NhanVienMapper;
 import com.java.project.models.NhanVienCreateModel;
 import com.java.project.models.NhanVienUpdateModel;
 import com.java.project.repositories.NhanVienRepository;
 import com.java.project.repositories.VaiTroRepository;
+import com.java.project.request.ChangPasswordRequest;
 import com.java.project.utils.RandomUtil;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
@@ -20,10 +23,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -70,7 +75,7 @@ public class NhanVienService {
                 .orElseThrow(() -> new ResourceNotFoundException("Vai trò với ID " + model.getVaiTro() + " không tồn tại."));
 
         NhanVien nhanVien = new NhanVien();
-        nhanVien.setMaNhanVien(generateMaNhanVien(model.getMaNhanVien()));
+        nhanVien.setMaNhanVien(NhanVienHelper.createNhanVienHelper());
         nhanVien.setTenNhanVien(model.getTenNhanVien());
         nhanVien.setTenDangNhap(model.getTenDangNhap());
         nhanVien.setEmail(model.getEmail());
@@ -108,6 +113,20 @@ public class NhanVienService {
         nhanVien.setGioiTinh(model.getGioiTinh());
         nhanVien.setAvatarUrl(model.getAvatarUrl());
         nhanVien.setVaiTro(vaiTro);
+        return NhanVienMapper.toNhanVienDTO(nhanVienRepository.save(nhanVien));
+    }
+
+    public NhanVienDto changePassword(Integer id, ChangPasswordRequest changPasswordRequest) {
+        NhanVien nhanVien = nhanVienRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Employee is not found with id: " + id));
+        // So sánh mật khẩu của tài khoản nhân viên
+        if(!passwordEncoder.matches(changPasswordRequest.getOldPassword(), nhanVien.getMat_khau())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Old password is not correct");
+        }
+
+        // Mã hóa mật khẩu mới
+        String encodedNewPassword = passwordEncoder.encode(changPasswordRequest.getNewPassword());
+        nhanVien.setMat_khau(encodedNewPassword);
         return NhanVienMapper.toNhanVienDTO(nhanVienRepository.save(nhanVien));
     }
 
