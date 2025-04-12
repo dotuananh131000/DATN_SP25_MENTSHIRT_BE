@@ -205,6 +205,8 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             @Param("ngayBatDau") LocalDate ngayBatDau,
             @Param("ngayKetThuc") LocalDate ngayKetThuc
     );
+
+    Optional<HoaDon>findByMaHoaDon(String maHoaDon);
 }
 
 

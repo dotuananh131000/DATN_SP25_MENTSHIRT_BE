@@ -78,7 +78,7 @@ public class BanHangOnlineService {
             phieuGiamGia.setSoLuong(phieuGiamGia.getSoLuong() - 1);
          }
 
-         if(hoaDonModel.getPhuongThucThanhToan() == 4){
+         if(hoaDonModel.getPhuongThucThanhToan() == 4){ //Phương thức thanh toán VNPay
              hoaDon.setTrangThai(1); // Trả về hóa đơn đã thanh toán
              updateSoLuongSanPhamChiTiet(danhSachChiTiet);
          }else {
