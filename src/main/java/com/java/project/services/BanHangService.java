@@ -110,7 +110,9 @@ public class BanHangService {
             hoaDon.setTrangThaiGiaoHang(1);
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
             ,"Đang chờ xác nhận");
+
             return hoaDonRepository.save(hoaDon); //Từ tạo hóa đơn sang chờ chờ xác nhận
+
         }else if(hoaDon.getTrangThaiGiaoHang() == 1){
             hoaDon.setTrangThaiGiaoHang(2);
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
@@ -120,16 +122,21 @@ public class BanHangService {
             hoaDon.setTrangThaiGiaoHang(3);
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
                     ,"Đang chờ vận chuyển");
+
             return hoaDonRepository.save(hoaDon); //Từ xác nhận, sang chờ vận chuyển
+
         }else if(hoaDon.getTrangThaiGiaoHang() == 3){
             hoaDon.setTrangThaiGiaoHang(4);
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
                     ,"Đã được vận chuyển");
+
             return hoaDonRepository.save(hoaDon); //Từ chờ vận chuyển, sang vận chuyển
+
         }else if(hoaDon.getTrangThaiGiaoHang() == 4){
             hoaDon.setTrangThaiGiaoHang(5);
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
                     ,"Đơn hàng của bạn đã thành công");
+            
             return hoaDonRepository.save(hoaDon); //Từ vận chuyển sang thành công
         }
         return hoaDonRepository.save(hoaDon);
