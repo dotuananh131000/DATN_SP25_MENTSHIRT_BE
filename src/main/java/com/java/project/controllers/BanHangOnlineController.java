@@ -6,6 +6,7 @@ import com.java.project.entities.HoaDon;
 import com.java.project.request.APIRequestOrResponse;
 import com.java.project.request.HoaDonModel;
 import com.java.project.services.BanHangOnlineService;
+import com.java.project.services.NotificationService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,8 @@ import java.util.List;
 public class BanHangOnlineController {
     BanHangOnlineService banHangOnlineService;
 
+    NotificationService notificationService;
+
     @GetMapping("/phieu-giam-gia")
     public APIRequestOrResponse<List<PhieuGiamGiaDto>>getPhieuGiamGia(@RequestParam(required = false) Integer idKH){
         List<PhieuGiamGiaDto> listPhieuGiamGia = banHangOnlineService.getPhieuGiamGiaByKH(idKH);
@@ -32,6 +35,7 @@ public class BanHangOnlineController {
     @PostMapping("/creatOrder")
     public APIRequestOrResponse<HoaDon>createOrder(@Valid @RequestBody HoaDonModel hoaDonModel){
         HoaDon hoaDon = banHangOnlineService.addHoaDonOnline(hoaDonModel);
+        notificationService.notifyNewOrder(hoaDon);
         return APIRequestOrResponse.<HoaDon>builder()
                 .data(hoaDon)
                 .build();

@@ -41,6 +41,12 @@ public class DiaChiKhachHangController {
         return ResponseEntity.ok(new ApiResponse("success", "Danh sách địa chỉ khách hàng", diaChiKhachHangDtos));
     }
 
+    @GetMapping("/dia-chi-mac-dinh/{khachHangId}")
+    public ResponseEntity<ApiResponse>getDiaChiMacDinh(@PathVariable Integer khachHangId) {
+        DiaChiKhachHangDto diaChiKhachHangDto = diaChiKhachHangService.getDiaChiMacDinh(khachHangId);
+        return ResponseEntity.ok(new ApiResponse("success","Địa chỉ mac dinh của khách hàng", diaChiKhachHangDto));
+    }
+
     //Đặt địa chỉ thành địa chỉ mặc định và câp nhật lại danh sách địa chỉ
     @PutMapping("/set-default/{id}")
     public APIRequestOrResponse<String> setDefaulDiaChi(@PathVariable("id") Integer id) {

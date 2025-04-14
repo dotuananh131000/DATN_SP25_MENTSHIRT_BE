@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -119,6 +120,13 @@ public class DiaChiKhachHangService {
         DiaChiKhachHang diaChiKhachHang = diaChiKhachHangRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Địa chỉ khách hàng không tồn tại"));
         diaChiKhachHangRepository.delete(diaChiKhachHang);
+    }
+
+    public DiaChiKhachHangDto getDiaChiMacDinh(Integer khachHangId){
+      DiaChiKhachHang diaChiKhachHang = diaChiKhachHangRepository.getDiaChiMacDinh(khachHangId)
+                .orElseThrow(() -> new EntityNotFoundException("Địa chỉ khác hàng không tồn tại"));
+
+      return DiaChiKhachHangMapper.toDTO(diaChiKhachHang);
     }
 
     @Transactional
