@@ -33,9 +33,10 @@ public class SercurityConfig {
             , "/san-pham", "/api/thuong-hieu", "/api/chat-lieu", "/api/co-ao"
             , "/api/kich-thuoc", "/api/mau-sac", "/api/tay-ao", "/api/xuat-xu"
             , "/api/khach-hang/myAccount", "/phieu-giam-gia", "/creatOrder"
-            , "/api/hoa-don/khach-hang/{id}", "/api/dia-chi/khach-hang/{khachHangId}"
-            , "/api/dia-chi/set-default/{id}", "/api/dia-chi", "/api/dia-chi/{id}"
-            , "/payment/vnpay-callback", "/payment/handle-response", "/payment/create-payment-url/{orderId}"};
+            , "/api/hoa-don/khach-hang/**", "/api/dia-chi/khach-hang/**"
+            , "/api/dia-chi/set-default/**", "/api/dia-chi", "/api/dia-chi/**"
+            , "/payment/vnpay-callback", "/payment/handle-response", "/payment/create-payment-url/**"
+            , "/api/dia-chi/dia-chi-mac-dinh/**", "/api/khach-hang/changePassword/**"};
 
     @NonFinal
     protected static final String SIGN_KEY = ENVConfig.getEnv("JWT_SECRET");

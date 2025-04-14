@@ -6,6 +6,8 @@ import com.java.project.dtos.NhanVienDto;
 import com.java.project.exceptions.RuntimeException;
 import com.java.project.models.KhachHangCreateModel;
 import com.java.project.models.KhachHangUpdateModel;
+import com.java.project.request.APIRequestOrResponse;
+import com.java.project.request.ChangPasswordRequest;
 import com.java.project.services.KhachHangService;
 import com.java.project.exceptions.EntityAlreadyExistsException;
 import com.java.project.exceptions.ResourceNotFoundException;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequestMapping("/api/khach-hang")
 public class KhachHangConroller {
     @Autowired
@@ -142,6 +144,15 @@ public class KhachHangConroller {
         }catch (ResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("error", e.getMessage(), null));
         }
+    }
+
+    @PutMapping("/changePassword/{id}")
+    public APIRequestOrResponse<KhachHangDto> changePassword(@PathVariable("id") Integer id,
+                                                            @Valid @RequestBody ChangPasswordRequest request){
+        KhachHangDto khachHangDto = khachHangService.changePassword(id, request);
+        return APIRequestOrResponse.<KhachHangDto>builder()
+                .data(khachHangDto)
+                .build();
     }
 
 }

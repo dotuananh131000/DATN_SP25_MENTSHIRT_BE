@@ -5,6 +5,7 @@ import com.java.project.dtos.NhanVienDto;
 import com.java.project.entities.KhachHang;
 import com.java.project.entities.NhanVien;
 import com.java.project.exceptions.EntityAlreadyExistsException;
+import com.java.project.exceptions.EntityNotFoundException;
 import com.java.project.exceptions.ResourceNotFoundException;
 import com.java.project.exceptions.RuntimeException;
 import com.java.project.mappers.KhachHangMapper;
@@ -12,6 +13,7 @@ import com.java.project.mappers.NhanVienMapper;
 import com.java.project.models.KhachHangCreateModel;
 import com.java.project.models.KhachHangUpdateModel;
 import com.java.project.repositories.KhachHangRepository;
+import com.java.project.request.ChangPasswordRequest;
 import com.java.project.utils.RandomUtil;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -157,5 +161,19 @@ public class KhachHangService {
         KhachHang khachHang = khachHangRepository.findByEmail(email)
                 .orElseThrow(()-> new RuntimeException("Không tìm thấy nhân viên"));
         return KhachHangMapper.toDTO(khachHang);
+    }
+
+    public KhachHangDto changePassword(Integer id, ChangPasswordRequest changPasswordRequest) {
+        KhachHang khachHang = khachHangRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Customer is not found with id: " + id));
+        // So sánh mật khẩu của tài khoản nhân viên
+        if(!passwordEncoder.matches(changPasswordRequest.getOldPassword(), khachHang.getMat_khau())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Old password is not correct");
+        }
+
+        // Mã hóa mật khẩu mới
+        String encodedNewPassword = passwordEncoder.encode(changPasswordRequest.getNewPassword());
+        khachHang.setMat_khau(encodedNewPassword);
+        return KhachHangMapper.toDTO(khachHangRepository.save(khachHang));
     }
 }

@@ -136,7 +136,7 @@ public class BanHangService {
             hoaDon.setTrangThaiGiaoHang(5);
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
                     ,"Đơn hàng của bạn đã thành công");
-            
+
             return hoaDonRepository.save(hoaDon); //Từ vận chuyển sang thành công
         }
         return hoaDonRepository.save(hoaDon);
