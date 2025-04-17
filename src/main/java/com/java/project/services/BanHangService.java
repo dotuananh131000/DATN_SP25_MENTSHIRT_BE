@@ -107,7 +107,7 @@ public class BanHangService {
 
         if(hoaDon.getTrangThaiGiaoHang() == 8){
             hoaDon.setTrangThai(1);
-            hoaDon.setTrangThaiGiaoHang(1);
+            hoaDon.setTrangThaiGiaoHang(2);
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
             ,"Đang chờ xác nhận");
 
@@ -115,6 +115,7 @@ public class BanHangService {
 
         }else if(hoaDon.getTrangThaiGiaoHang() == 1){
             hoaDon.setTrangThaiGiaoHang(2);
+
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
                     ,"Đã xác nhận");
             return hoaDonRepository.save(hoaDon); //Từ chờ xác nhận, sang xác nhận

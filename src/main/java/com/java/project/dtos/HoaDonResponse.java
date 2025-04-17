@@ -16,9 +16,13 @@ import java.time.LocalDateTime;
 public class HoaDonResponse {
     private Integer id;
 
+    private Integer idKhachHang;
+
     private String maKhachHang;
 
     private String tenKhachHang;
+
+    private Integer idNhanVien;
 
     private String maNhanVien;
 
