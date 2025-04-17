@@ -111,4 +111,15 @@ public class HoaDonController {
         HoaDon hoaDon = hoaDonRepository.findById(idHD).orElse(null);
        return hoaDonMapper.toHoaDonResponse(hoaDon);
     }
+
+    @PutMapping("/{idHD}")
+    public APIRequestOrResponse<HoaDonResponse> tiepNhanHoaDon(
+            @PathVariable("idHD") Integer idHD,
+            @RequestParam("idNhanVien") Integer idNhanVien
+    ) {
+        return APIRequestOrResponse .<HoaDonResponse>builder()
+                .data(hoaDonService.tiepNhanHoaDon(idHD, idNhanVien))
+                .message("Ok rồi nha")
+                .build();
+    }
 }

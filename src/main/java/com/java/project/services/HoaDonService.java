@@ -4,8 +4,10 @@ import com.java.project.dtos.HoaDonBanHangResponse;
 import com.java.project.dtos.HoaDonHomNayResponse;
 import com.java.project.dtos.HoaDonResponse;
 import com.java.project.entities.HoaDon;
+import com.java.project.entities.NhanVien;
 import com.java.project.mappers.HoaDonMapper;
 import com.java.project.repositories.HoaDonRepository;
+import com.java.project.repositories.NhanVienRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +30,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class HoaDonService {
     HoaDonRepository hoaDonRepository;
+    NhanVienRepository nhanVienRepository;
 
     HoaDonMapper hoaDonMapper;
 
@@ -98,6 +102,18 @@ public class HoaDonService {
 
     public Optional<HoaDonBanHangResponse>getHoaDonByMaHoaDon(String maHoaDon){
         return hoaDonRepository.getHoaDonByMaHoaDon(maHoaDon);
+    }
+
+    @Transactional
+    public HoaDonResponse tiepNhanHoaDon(Integer idHD, Integer idNhanVien) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHD)
+                .orElseThrow(()-> new EntityNotFoundException("Không tìm thấy hóa đơn với id: " + idHD));
+
+        NhanVien nhanVien = nhanVienRepository.findById(idNhanVien)
+                .orElseThrow(()-> new EntityNotFoundException("Không tìm thấy hóa đơn với id: " + idHD));
+        hoaDon.setNhanVien(nhanVien);
+
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 
 

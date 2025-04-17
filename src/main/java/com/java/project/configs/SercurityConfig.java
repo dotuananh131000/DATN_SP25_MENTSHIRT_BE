@@ -36,7 +36,8 @@ public class SercurityConfig {
             , "/api/hoa-don/khach-hang/**", "/api/dia-chi/khach-hang/**"
             , "/api/dia-chi/set-default/**", "/api/dia-chi", "/api/dia-chi/**"
             , "/payment/vnpay-callback", "/payment/handle-response", "/payment/create-payment-url/**"
-            , "/api/dia-chi/dia-chi-mac-dinh/**", "/api/khach-hang/changePassword/**"};
+            , "/api/dia-chi/dia-chi-mac-dinh/**", "/api/khach-hang/changePassword/**"
+            , "/ws/**"};
 
     @NonFinal
     protected static final String SIGN_KEY = ENVConfig.getEnv("JWT_SECRET");

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
@@ -34,4 +35,6 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
     Optional<NhanVien> findByEmail(String email);
 
     Optional<NhanVien> findBySoDienThoai(String soDienThoai);
+
+    Optional<NhanVien> findByMaNhanVien(String maNhanVien);
 }
