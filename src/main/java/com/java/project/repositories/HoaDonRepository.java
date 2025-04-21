@@ -91,34 +91,9 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     List<HoaDonHomNayResponse> getHoaDonHomNay();
 
     @Query("""
-                select new com.java.project.dtos.HoaDonBanHangResponse(
-            hd.id,
-            hd.khachHang.tenKhachHang,
-            hd.khachHang.soDienThoai,
-            hd.nhanVien.maNhanVien,
-            hd.maHoaDon,
-            pgg.loaiGiam,
-            pgg.giaTriGiam,
-            hd.loaiDon,
-            hd.ghiChu,
-            hd.hoTenNguoiNhan,
-            hd.soDienThoai,
-            hd.email,
-            hd.diaChiNhanHang,
-            hd.ngayNhanMongMuon,
-            hd.ngayDuKienNhan,
-            hd.trangThaiGiaoHang,
-            hd.phiShip,
-            hd.tongTien,
-            hd.ngayTao,
-            hd.trangThai,
-            pgg.hinhThucGiamGia
-            ) 
-            from HoaDon hd left join KhachHang kh on hd.khachHang.id = kh.id
-            left join PhieuGiamGia pgg on hd.phieuGiamGia.id = pgg.id
-            where hd.maHoaDon = :maHoaDon
+               SELECT hd FROM HoaDon hd WHERE hd.maHoaDon = :maHoaDon
             """)
-    Optional<HoaDonBanHangResponse> getHoaDonByMaHoaDon(@Param("maHoaDon") String maHoaDon);
+    Optional<HoaDon> getHoaDonByMaHoaDon(@Param("maHoaDon") String maHoaDon);
 
     //Tổng doanh thu đơn hàng trong ngày hôm nay
     @Query("select SUM(hd.tongTien) from HoaDon hd where cast(hd.ngayTao as date ) = cast(current_date as date ) " +

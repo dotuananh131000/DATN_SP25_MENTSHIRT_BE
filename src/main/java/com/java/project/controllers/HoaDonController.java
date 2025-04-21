@@ -122,4 +122,12 @@ public class HoaDonController {
                 .message("Ok rồi nha")
                 .build();
     }
+
+    @GetMapping("/getByMa/{maHoaDon}")
+    public  APIRequestOrResponse<HoaDonResponse>getHoaDonByMaHoaDon(@PathVariable String maHoaDon){
+        return APIRequestOrResponse .<HoaDonResponse>builder()
+                .data(hoaDonService.getHoaDonByMaHoaDon(maHoaDon))
+                .message("Đã lấy thông tin hóa đơn.")
+                .build();
+    }
 }
