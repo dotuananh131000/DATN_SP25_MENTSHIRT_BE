@@ -100,8 +100,10 @@ public class HoaDonService {
         return hoaDonRepository.getHoaDonHomNay();
     }
 
-    public Optional<HoaDonBanHangResponse>getHoaDonByMaHoaDon(String maHoaDon){
-        return hoaDonRepository.getHoaDonByMaHoaDon(maHoaDon);
+    public HoaDonResponse getHoaDonByMaHoaDon(String maHoaDon){
+        return hoaDonRepository.getHoaDonByMaHoaDon(maHoaDon)
+                .map(hoaDonMapper::toHoaDonResponse)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn với mã: " + maHoaDon));
     }
 
     @Transactional

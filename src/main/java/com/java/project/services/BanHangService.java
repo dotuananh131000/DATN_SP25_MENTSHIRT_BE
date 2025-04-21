@@ -1,7 +1,9 @@
 package com.java.project.services;
 
+import com.java.project.dtos.HoaDonChiTietResponse;
 import com.java.project.dtos.PhieuGiamGiaKhachHangResponse;
 import com.java.project.dtos.PhieuGiamGiaResponse;
+import com.java.project.dtos.SanPhamChiTietResponse;
 import com.java.project.entities.*;
 import com.java.project.helper.HoaDonHelper;
 import com.java.project.repositories.*;
@@ -118,6 +120,9 @@ public class BanHangService {
 
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
                     ,"Đã xác nhận");
+            if(hoaDon.getTrangThai() == 0){
+                subtractNumberOfProduct(hoaDon.getId());
+            }
             return hoaDonRepository.save(hoaDon); //Từ chờ xác nhận, sang xác nhận
         }else if(hoaDon.getTrangThaiGiaoHang() == 2){
             hoaDon.setTrangThaiGiaoHang(3);
@@ -135,12 +140,35 @@ public class BanHangService {
 
         }else if(hoaDon.getTrangThaiGiaoHang() == 4){
             hoaDon.setTrangThaiGiaoHang(5);
+            hoaDon.setTrangThai(1);
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
                     ,"Đơn hàng của bạn đã thành công");
 
             return hoaDonRepository.save(hoaDon); //Từ vận chuyển sang thành công
         }
         return hoaDonRepository.save(hoaDon);
+    }
+
+    private void subtractNumberOfProduct(Integer idHD){
+        if(idHD != null){
+            List<HoaDonChiTietResponse>ListProDuctDetail = hoaDonChiTietRepository.getAllByIDHD(idHD);
+            if(ListProDuctDetail.size() > 0){
+                for(HoaDonChiTietResponse hdct : ListProDuctDetail){
+                    Optional<SanPhamChiTiet> spctOptional = sanPhamChiTietRepository.findById(hdct.getIdSPCT());
+                    if(spctOptional.isPresent()){
+                        SanPhamChiTiet spct = spctOptional.get();
+                        int newQuantity = spct.getSoLuong() - hdct.getSoLuong();
+
+                        if(newQuantity >= 0){
+                            spct.setSoLuong(newQuantity);
+                            sanPhamChiTietRepository.save(spct);
+                        }else {
+                            throw new IllegalArgumentException("Sản phẩm trong kho không đủ");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public HoaDonChiTiet reloadSPGioHang(Integer id){
