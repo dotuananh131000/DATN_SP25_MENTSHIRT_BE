@@ -130,4 +130,12 @@ public class HoaDonController {
                 .message("Đã lấy thông tin hóa đơn.")
                 .build();
     }
+
+    @PutMapping("/paid/{idHD}")
+    public APIRequestOrResponse<HoaDonResponse>paidInvoice(@PathVariable Integer idHD){
+        return APIRequestOrResponse .<HoaDonResponse> builder()
+                .data(hoaDonService.paidInvoice(idHD))
+                .message("Hóa đơn đã được thanh toán")
+                .build();
+    }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -53,4 +54,6 @@ public class HoaDonResponse {
     private LocalDateTime ngayTao;
 
     private Integer trangThai;
+
+    private BigDecimal phuPhi;
 }

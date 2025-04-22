@@ -14,6 +14,7 @@ public interface HoaDonPhuongThucThanhToanRepository extends JpaRepository<HoaDo
     @Query("""
             select new com.java.project.dtos.HoaDonPhuongThucThanhToanResponse(
             hdpttt.id,
+            hdpttt.maGiaoDich,
             hd.maHoaDon,
             pttt.tenPhuongThuc,
             hdpttt.ngayThucHienThanhToan,

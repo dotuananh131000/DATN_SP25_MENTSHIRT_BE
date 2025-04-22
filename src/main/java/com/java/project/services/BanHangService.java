@@ -140,7 +140,7 @@ public class BanHangService {
 
         }else if(hoaDon.getTrangThaiGiaoHang() == 4){
             hoaDon.setTrangThaiGiaoHang(5);
-            hoaDon.setTrangThai(1);
+//            hoaDon.setTrangThai(1);
             mailService.sendBillStatus(hoaDon.getHoTenNguoiNhan(), hoaDon.getEmail(),hoaDon.getMaHoaDon()
                     ,"Đơn hàng của bạn đã thành công");
 

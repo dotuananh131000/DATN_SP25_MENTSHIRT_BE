@@ -4,6 +4,7 @@ import com.java.project.dtos.HoaDonPhuongThucThanhToanResponse;
 import com.java.project.entities.HoaDon;
 import com.java.project.entities.HoaDonPhuongThucThanhToan;
 import com.java.project.entities.PhuongThucThanhToan;
+import com.java.project.helper.HDPTTTHelper;
 import com.java.project.repositories.HoaDonPhuongThucThanhToanRepository;
 import com.java.project.repositories.HoaDonRepository;
 import com.java.project.repositories.PhuongThucThanhToanRepository;
@@ -27,6 +28,7 @@ public class HoaDonPhuongThucThanhToanService {
     @Autowired
     PhuongThucThanhToanRepository phuongThucThanhToanRepository;
 
+
     public List<HoaDonPhuongThucThanhToanResponse>getAll(Integer idHD){
         return hoaDonPhuongThucThanhToanRepository.getAllByIdHD(idHD);
     }
@@ -44,6 +46,7 @@ public class HoaDonPhuongThucThanhToanService {
 
         HoaDonPhuongThucThanhToan hoaDonPhuongThucThanhToan = new HoaDonPhuongThucThanhToan();
         BeanUtils.copyProperties(request,hoaDonPhuongThucThanhToan);
+        hoaDonPhuongThucThanhToan.setMaGiaoDich(HDPTTTHelper.createHDPTTTHelper());
         hoaDonPhuongThucThanhToan.setHoaDon(hoaDon);
         hoaDonPhuongThucThanhToan.setPhuongThucThanhToan(pttt);
         hoaDonPhuongThucThanhToan.setNgayThucHienThanhToan(LocalDate.now());

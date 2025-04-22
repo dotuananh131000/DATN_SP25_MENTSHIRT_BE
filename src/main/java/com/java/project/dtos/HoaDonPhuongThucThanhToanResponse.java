@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class HoaDonPhuongThucThanhToanResponse {
     private Integer hoaDonPhuongThucThanhToan_id;
+    private String maGiaoDich;
     private String maHoaDon;
     private String tenPhuongThuc;
     private LocalDate ngayThucHienThanhToan;
