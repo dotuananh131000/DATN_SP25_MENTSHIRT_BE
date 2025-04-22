@@ -118,5 +118,13 @@ public class HoaDonService {
         return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 
+    @Transactional
+    public HoaDonResponse paidInvoice (Integer idHD) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHD)
+                .orElseThrow(()-> new EntityNotFoundException("Không tìm thấy hóa đơn với id: " + idHD));
+        hoaDon.setTrangThai(1);
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+    }
+
 
 }

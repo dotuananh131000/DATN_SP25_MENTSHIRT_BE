@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -77,4 +78,7 @@ public class HoaDon {
 
     @Column(name = "trang_thai")
     private Integer trangThai;
+
+    @Column(name = "phu_phi")
+    private BigDecimal phuPhi;
 }
