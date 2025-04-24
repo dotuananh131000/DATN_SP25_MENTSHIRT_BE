@@ -1,18 +1,22 @@
 package com.java.project.services;
 
 import com.java.project.configs.VNPayConfig;
-import com.java.project.entities.HoaDon;
+import com.java.project.dtos.HoaDonChiTietResponse;
+import com.java.project.entities.*;
 import com.java.project.exceptions.EntityNotFoundException;
-import com.java.project.repositories.HoaDonRepository;
+import com.java.project.helper.HDPTTTHelper;
+import com.java.project.repositories.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -25,6 +29,16 @@ public class VNPaymentService {
 
     HoaDonRepository hoaDonRepository;
 
+    HoaDonChiTietRepository hoaDonChiTietRepository;
+
+    SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    PhuongThucThanhToanRepository phuongThucThanhToanRepository;
+
+    HoaDonPhuongThucThanhToanRepository hoaDonPhuongThucThanhToanRepository;
+
+    PhieuGiamGiaRepository phieuGiamGiaRepository;
+
 
     public String generatePaymentUrl(String maHoaDon) throws UnsupportedEncodingException {
         // Lấy hóa đơn từ database
@@ -32,7 +46,8 @@ public class VNPaymentService {
                 .orElseThrow(() -> new EntityNotFoundException("Hóa đơn không tồn tại"));
 
         // Tổng tiền đơn hàng
-        long totalAmount = (hoaDon.getTongTien().longValue()) + hoaDon.getPhiShip().longValue();
+
+        long totalAmount = (hoaDon.getTongTien().longValue()) + hoaDon.getPhiShip().longValue() - tinhTienGiam(hoaDon) ;
         long amount = totalAmount * 100;
 
         // Tạo tham số VNPay
@@ -98,7 +113,8 @@ public class VNPaymentService {
         // Lấy thông tin hóa đơn từ DB
         HoaDon hoaDon = hoaDonRepository.findByMaHoaDon(vnpTxnRef)
                 .orElseThrow(() -> new EntityNotFoundException("Hóa đơn không tồn tại."));
-        BigDecimal tongTienSanPham = BigDecimal.valueOf(hoaDon.getTongTien() + hoaDon.getPhiShip());
+        BigDecimal tongTienSanPham =
+                BigDecimal.valueOf(hoaDon.getTongTien() + hoaDon.getPhiShip() - tinhTienGiam(hoaDon));
 
         // Chuyển đổi số tiền từ VNPay về VNĐ
         BigDecimal amountFromVNPay = new BigDecimal(vnpAmount).divide(BigDecimal.valueOf(100));
@@ -110,13 +126,81 @@ public class VNPaymentService {
 
         // Nếu giao dịch thành công
         if ("00".equals(vnpResponseCode)) {
-            hoaDon.setTrangThaiGiaoHang(2); // Chuyển ngay trạng thái giao hàng là đã xác nhận
+            hoaDon.setTrangThaiGiaoHang(1); // Chuyển ngay trạng thái giao hàng là chờ xác nhận
             hoaDon.setTrangThai(1); // Chuyn tran thái hóa đơn là đã thanh toans
+            processPaymentAndUpdateStock(hoaDon);
+            addTotal(hoaDon.getId(), amountFromVNPay);
             hoaDonRepository.save(hoaDon);
             return "Giao dịch thành công";
         } else {
             return "Giao dịch thất bại, mã lỗi: " + vnpResponseCode;
         }
+    }
+
+    @Transactional
+    protected void processPaymentAndUpdateStock(HoaDon hoaDon) {
+        List<HoaDonChiTiet> list = hoaDonChiTietRepository.findByHoaDon_Id(hoaDon.getId());
+
+        List<SanPhamChiTiet> sanPhamUpdate = new ArrayList<>();
+
+        for(HoaDonChiTiet hoaDonChiTiet : list) {
+            hoaDonChiTiet.setTrangThai(1);
+
+            SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+
+            if(sanPhamChiTiet == null) continue;
+
+            int soLuongMoi = sanPhamChiTiet.getSoLuong() - hoaDonChiTiet.getSoLuong();
+            if(soLuongMoi < 0){
+                throw new IllegalArgumentException("Số lượng ở trong kho không đủ");
+            }
+            sanPhamChiTiet.setSoLuong(soLuongMoi);
+            sanPhamUpdate.add(sanPhamChiTiet);
+        }
+
+        hoaDonChiTietRepository.saveAll(list);
+        sanPhamChiTietRepository.saveAll(sanPhamUpdate);
+
+    }
+
+    // Lưu lại thanh toán
+    @Transactional
+    protected void addTotal (Integer idHoaDon, BigDecimal total) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm tấy hóa đơn với mã là:" + idHoaDon));
+
+        PhuongThucThanhToan pttt = phuongThucThanhToanRepository.findById(4)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy pttt"));
+
+        HoaDonPhuongThucThanhToan hdpttt = new HoaDonPhuongThucThanhToan();
+        hdpttt.setHoaDon(hoaDon);
+        hdpttt.setMaGiaoDich(HDPTTTHelper.createHDPTTTHelper());
+        hdpttt.setPhuongThucThanhToan(pttt);
+        hdpttt.setNgayThucHienThanhToan(LocalDate.now());
+        hdpttt.setSoTienThanhToan(total);
+
+        hoaDonPhuongThucThanhToanRepository.save(hdpttt);
+    }
+
+    private long tinhTienGiam (HoaDon hoaDon) {
+        PhieuGiamGia phieuGiamGia = hoaDon.getPhieuGiamGia();
+
+        if(phieuGiamGia == null) return 0;
+
+        Double tongTien = hoaDon.getTongTien();
+        long soTienGiam = 0;
+
+        if(phieuGiamGia.getHinhThucGiamGia() == 0) {
+            soTienGiam = Math.round(tongTien * phieuGiamGia.getGiaTriGiam() / 100);
+        } else {
+            soTienGiam = Math.round(phieuGiamGia.getGiaTriGiam());
+        }
+
+        if(phieuGiamGia.getSoTienGiamToiDa() != null) {
+            soTienGiam = Math.min(soTienGiam, phieuGiamGia.getSoTienGiamToiDa().longValue());
+        }
+
+        return soTienGiam;
     }
 
     public String generateHtml(String title, String message, String content) {
