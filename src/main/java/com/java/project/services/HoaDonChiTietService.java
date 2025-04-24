@@ -1,20 +1,90 @@
 package com.java.project.services;
 
 import com.java.project.dtos.HoaDonChiTietResponse;
+import com.java.project.dtos.HoaDonResponse;
+import com.java.project.entities.HoaDon;
 import com.java.project.entities.HoaDonChiTiet;
+import com.java.project.entities.SanPhamChiTiet;
+import com.java.project.exceptions.EntityNotFoundException;
+import com.java.project.mappers.HoaDonChiTietMapper;
+import com.java.project.mappers.HoaDonMapper;
 import com.java.project.repositories.HoaDonChiTietRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.java.project.repositories.HoaDonRepository;
+import com.java.project.repositories.SanPhamChiTietRepository;
+import com.java.project.request.HoaDonChiTietRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public class HoaDonChiTietService {
+    @Autowired
     HoaDonChiTietRepository hoaDonChiTietRepository;
 
+    @Autowired
+    HoaDonRepository hoaDonRepository;
+
+    @Autowired
+    SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    @Autowired
+    HoaDonChiTietMapper hoaDonChiTietMapper;
+
+    public List<HoaDonChiTietResponse> getAllHoaDonChiTiet(Integer idHD) {
+        List<HoaDonChiTietResponse> getAll = hoaDonChiTietRepository.getAllByIDHD(idHD);
+        return getAll;
+    }
+
+
+    @Transactional
+    public HoaDonChiTietResponse add(HoaDonChiTietRequest hoaDonChiTietRequest){
+        HoaDon hoaDon = hoaDonRepository.findById(hoaDonChiTietRequest.getIdHoaDon())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn với ID: "
+                        + hoaDonChiTietRequest.getIdHoaDon()));
+
+        SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(hoaDonChiTietRequest.getIdSPCT())
+                .orElseThrow(() -> new EntityNotFoundException("Not found ProductDetail"
+                        + hoaDonChiTietRequest.getIdSPCT()));
+
+        Optional<HoaDonChiTiet>hoaDonChiTietOptional = hoaDonChiTietRepository
+                .findByHoaDon_IdAndSanPhamChiTiet_Id(hoaDon.getId(), sanPhamChiTiet.getId());
+        HoaDonChiTiet hoaDonChiTiet;
+
+        // Cộng dồn khi sản phâ đã có trong giỏ hàng
+        if(hoaDonChiTietOptional.isPresent() && hoaDonChiTietOptional.get().getTrangThai() == 0){
+            hoaDonChiTiet = hoaDonChiTietOptional.get();
+            hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + hoaDonChiTietRequest.getSoLuong());
+            double newAddTotal = sanPhamChiTiet.getDonGia().doubleValue() *  hoaDonChiTietRequest.getSoLuong();
+            hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() + newAddTotal);
+        }else {
+            hoaDonChiTiet = new HoaDonChiTiet();
+            Double thanhTien = (sanPhamChiTiet.getDonGia().doubleValue()) * hoaDonChiTietRequest.getSoLuong();
+
+            hoaDonChiTiet.setHoaDon(hoaDon);
+            hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
+            hoaDonChiTiet.setSoLuong(hoaDonChiTietRequest.getSoLuong());
+            hoaDonChiTiet.setThanhTien(thanhTien);
+            hoaDonChiTiet.setTrangThai(0);
+        }
+
+        return hoaDonChiTietMapper.toHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
+    }
+
+    @Transactional
+    public String delete (Integer idHoaDonChiTiet){
+        try {
+            HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(idHoaDonChiTiet)
+                    .orElseThrow(() -> new EntityNotFoundException("Not found ProductDetail"));
+            hoaDonChiTietRepository.delete(hoaDonChiTiet);
+            return "Đã loại sản phẩm ra khỏi giỏ hàng";
+        } catch (RuntimeException ex){
+            return "Lỗi khi xóa sản phẩm trong giỏ hàng";
+        }
+
+    }
 
 }

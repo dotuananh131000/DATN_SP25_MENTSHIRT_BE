@@ -78,12 +78,8 @@ public class BanHangOnlineService {
             phieuGiamGia.setSoLuong(phieuGiamGia.getSoLuong() - 1);
          }
 
-         if(hoaDonModel.getPhuongThucThanhToan() == 4){ //Phương thức thanh toán VNPay
-             hoaDon.setTrangThai(1); // Trả về hóa đơn đã thanh toán
-             updateSoLuongSanPhamChiTiet(danhSachChiTiet);
-         }else {
-             hoaDon.setTrangThai(0);
-         }
+         hoaDon.setTrangThai(0);
+
          hoaDon.setTongTien(caculatorTongTien(danhSachChiTiet));//Trả về hóa đơn chưa thanh toans
 
         return hoaDonRepository.save(hoaDon);
@@ -110,21 +106,4 @@ public class BanHangOnlineService {
         }).collect(Collectors.toList());
     }
 
-    private void updateSoLuongSanPhamChiTiet(List<HoaDonChiTiet> listSanPham){
-        listSanPham.stream()
-                .map(hoaDonChiTiet -> {
-                    SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
-                    if(sanPhamChiTiet != null){
-                        Integer soLuongBan = hoaDonChiTiet.getSoLuong();
-                        Integer soLuongMoi = sanPhamChiTiet.getSoLuong() - soLuongBan;
-                        //Kiểm tra số lượng trong kho
-                        if(soLuongMoi < 0){
-                            throw new IllegalArgumentException("Số lượng ở trong kho không đủ");
-                        }
-                        sanPhamChiTiet.setSoLuong(soLuongMoi);
-                    }
-                    return sanPhamChiTiet;
-                })
-                .forEach(sanPhamChiTietRepository :: save);
-    }
 }
