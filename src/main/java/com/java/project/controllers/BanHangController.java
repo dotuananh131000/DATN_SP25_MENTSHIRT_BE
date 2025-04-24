@@ -103,7 +103,7 @@ public class BanHangController {
     @PutMapping("/choosePGG/{idHD}")
     public APIRequestOrResponse<String> ChoosePhieuGiamGia(
             @PathVariable("idHD") Integer idHD, @RequestBody Integer idPGG){
-        HoaDon hoaDon = banHangService.choosePhieuGiamGia(idHD, idPGG);
+        banHangService.choosePhieuGiamGia(idHD, idPGG);
         return APIRequestOrResponse.<String>builder()
                 .data("Đã cập nhật phiếu giảm giá")
                 .build();

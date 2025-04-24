@@ -22,6 +22,7 @@ import java.util.*;
 
 @Service
 public class BanHangService {
+
     @Autowired
     HoaDonRepository hoaDonRepository;
     @Autowired
@@ -310,11 +311,13 @@ public class BanHangService {
                     .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phiếu giảm giá"))
                     : null;
         }
+        if(hoaDon.getPhieuGiamGia() != null ){
+            updateSoLuongPhieuGiamGiaKhiKoSD(hoaDon.getPhieuGiamGia().getId());
+        }
        if(idPhieuGiamGia != null){
-           updateSoLuongPhieuGiamGiaKhiKoSD(idPhieuGiamGia);
+           updateSoLuongPhieuGiamGiaKhiSD(idPhieuGiamGia);
        }
         hoaDon.setPhieuGiamGia(phieuGiamGia);
-        updateSoLuongPhieuGiamGiaKhiSD(hoaDon.getPhieuGiamGia().getId());
         return hoaDonRepository.save(hoaDon);
     }
 
@@ -322,13 +325,17 @@ public class BanHangService {
     public HoaDon choosePhieuGiamGia(Integer idHD, Integer idPGG){
         HoaDon hoaDon = hoaDonRepository.findById(idHD)
                 .orElseThrow(()-> new EntityNotFoundException("Không tìm thấy hóa đơn với id"+ idHD));
+
+        //Hóa đơn được chọn để thay đổi
         PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById(idPGG)
-                .orElseThrow(() -> new EntityNotFoundException(("Không tìm thấy phiếu giảm giá")));
+                .orElseThrow(() -> new EntityNotFoundException(("Không tìm thấy phiếu giảm giá với Id là: " + idPGG)));
 
         Integer idPGGPrev = hoaDon.getPhieuGiamGia() != null ? hoaDon.getPhieuGiamGia().getId():null;
         if(idPGGPrev != null){
             updateSoLuongPhieuGiamGiaKhiKoSD(hoaDon.getPhieuGiamGia().getId());
         }
+        updateSoLuongPhieuGiamGiaKhiSD(phieuGiamGia.getId());
+
 
         hoaDon.setPhieuGiamGia(phieuGiamGia);
         return hoaDonRepository.save(hoaDon);
