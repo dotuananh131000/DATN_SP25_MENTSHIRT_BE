@@ -4,10 +4,15 @@ import com.java.project.dtos.HoaDonBanHangResponse;
 import com.java.project.dtos.HoaDonHomNayResponse;
 import com.java.project.dtos.HoaDonResponse;
 import com.java.project.entities.HoaDon;
+import com.java.project.entities.HoaDonChiTiet;
 import com.java.project.entities.NhanVien;
+import com.java.project.entities.SanPhamChiTiet;
 import com.java.project.mappers.HoaDonMapper;
+import com.java.project.repositories.HoaDonChiTietRepository;
 import com.java.project.repositories.HoaDonRepository;
 import com.java.project.repositories.NhanVienRepository;
+import com.java.project.repositories.SanPhamChiTietRepository;
+import com.java.project.request.ThongTinDonHangRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +23,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class HoaDonService {
     HoaDonRepository hoaDonRepository;
+
     NhanVienRepository nhanVienRepository;
 
     HoaDonMapper hoaDonMapper;
 
-    LocalDateTime startDate = LocalDate.now().atStartOfDay();
-    LocalDateTime endDate = startDate.plusDays(1);
+    HoaDonChiTietRepository hoaDonChiTietRepository;
+
+    SanPhamChiTietRepository sanPhamChiTietRepository;
 
 
     public Page<HoaDonResponse>getHoaDonList(Pageable pageable,
@@ -124,6 +129,57 @@ public class HoaDonService {
                 .orElseThrow(()-> new EntityNotFoundException("Không tìm thấy hóa đơn với id: " + idHD));
         hoaDon.setTrangThai(1);
         return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+    }
+
+    @Transactional
+    public HoaDonResponse upDateThongTinDonHang(ThongTinDonHangRequest thongTinDonHangRequest) {
+        HoaDon hoaDon = hoaDonRepository.findById(thongTinDonHangRequest.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found for id " + thongTinDonHangRequest.getId()));
+
+        hoaDon.setHoTenNguoiNhan(thongTinDonHangRequest.getHoTenNguoiNhan());
+        hoaDon.setSoDienThoai(thongTinDonHangRequest.getSdt());
+        hoaDon.setEmail(thongTinDonHangRequest.getEmail());
+        hoaDon.setDiaChiNhanHang(thongTinDonHangRequest.getDiaChiNhanHang());
+
+        //Tiền chênh lệch khi đổi địa chỉ
+        if(hoaDon.getPhuPhi() == null){
+            hoaDon.setPhuPhi(BigDecimal.ZERO);
+        }
+        BigDecimal chenhLech = BigDecimal.valueOf(thongTinDonHangRequest.getPhiShip() - hoaDon.getPhiShip());
+        hoaDon.setPhuPhi(hoaDon.getPhuPhi().add(chenhLech));
+        hoaDon.setPhiShip(thongTinDonHangRequest.getPhiShip());
+
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+    }
+
+    @Transactional
+    public HoaDonResponse huyDonHang (Integer idHD) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHD)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found for id " + idHD));
+        hoaDon.setTrangThaiGiaoHang(7);
+
+        List<HoaDonChiTiet> listCartItem = hoaDonChiTietRepository.findByHoaDon_Id(hoaDon.getId());
+
+        List<SanPhamChiTiet> sanPhamUpdate = new ArrayList<>();
+
+        for(HoaDonChiTiet hoaDonChiTiet : listCartItem) {
+
+            SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+
+            if(sanPhamChiTiet == null) continue;
+
+            if (hoaDonChiTiet.getTrangThai() != null && hoaDonChiTiet.getTrangThai() == 1){
+                int soLuongMoi = sanPhamChiTiet.getSoLuong() + hoaDonChiTiet.getSoLuong();
+                sanPhamChiTiet.setSoLuong(soLuongMoi);
+            }else {
+                continue;
+            }
+            sanPhamUpdate.add(sanPhamChiTiet);
+        }
+
+//        hoaDonChiTietRepository.saveAll(listCartItem);
+        sanPhamChiTietRepository.saveAll(sanPhamUpdate);
+        return hoaDonMapper.toHoaDonResponse(hoaDon);
     }
 
 

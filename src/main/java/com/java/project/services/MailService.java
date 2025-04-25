@@ -1,18 +1,30 @@
 package com.java.project.services;
 
+import com.java.project.dtos.HoaDonPhuongThucThanhToanResponse;
+import com.java.project.entities.HoaDon;
+import com.java.project.entities.HoaDonPhuongThucThanhToan;
+import com.java.project.repositories.HoaDonPhuongThucThanhToanRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Service
 public class MailService {
     private final JavaMailSender javaMailSender;
 
-    public MailService(JavaMailSender javaMailSender) {
+    @Autowired
+    HoaDonPhuongThucThanhToanRepository hoaDonPhuongThucThanhToanRepository;
+
+    public MailService(JavaMailSender javaMailSender, HoaDonPhuongThucThanhToanRepository hoaDonPhuongThucThanhToanRepository) {
         this.javaMailSender = javaMailSender;
+        this.hoaDonPhuongThucThanhToanRepository = hoaDonPhuongThucThanhToanRepository;
     }
 
     @Async // Chạy bất đồng bộ
@@ -138,9 +150,35 @@ public class MailService {
                 + "<p>Vui lòng kiểm tra chi tiết đơn hàng của bạn tại trang web của chúng tôi hoặc liên hệ bộ phận chăm sóc khách hàng nếu cần hỗ trợ thêm.</p>"
                 + "<hr/>"
                 + "<p>📞 Hotline: 0396798513</p>"
-                + "<p>🌐 Website: <a href='https://your-website.com'>https://yeu-em-tu-cai-nhin-dau-tien.com</a></p>"
+                + "<p>🌐 Website: <a href='http://localhost:5173/'>Men-TShirt.com</a></p>"
                 + "<p>Cảm ơn bạn đã mua sắm tại <strong>Men T-shirt</strong>!</p>";
 
         sendHtmlMail(to,subject, htmlBody);
+    }
+
+    @Async
+    public void totaled (HoaDon hoaDon) {
+
+        List<HoaDonPhuongThucThanhToanResponse> hoaDonPhuongThucThanhToanList =
+                hoaDonPhuongThucThanhToanRepository.getAllByIdHD(hoaDon.getId());
+
+        BigDecimal tongTienThanhToan = hoaDonPhuongThucThanhToanList.stream()
+                .map(HoaDonPhuongThucThanhToanResponse::getSoTienThanhToan)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+
+
+        String subject = "🎉 Đơn hàng của bạn đã được thanh toán !";
+
+        String htmlBody = "<p>Xin chào <strong>" + hoaDon.getHoTenNguoiNhan() + "</strong>,</p>"
+                + "<p>Chúng tôi xin thông báo rằng <strong>đơn hàng " + hoaDon.getMaHoaDon() + "</strong> của bạn đã được <strong>thanh toán</strong>.</p>"
+                + "<p><strong>Với số tiền:</strong> <span style='color: #28a745;'>" + tongTienThanhToan + "</span></p>"
+                + "<p>Vui lòng kiểm tra chi tiết đơn hàng của bạn tại trang web của chúng tôi hoặc liên hệ bộ phận chăm sóc khách hàng nếu cần hỗ trợ thêm.</p>"
+                + "<hr/>"
+                + "<p>📞 Hotline: 0396798513</p>"
+                + "<p>🌐 Website: <a http://localhost:5173/>Men-TShirt.com</a></p>"
+                + "<p>Cảm ơn bạn đã mua sắm tại <strong>Men T-shirt</strong>!</p>";
+
+        sendHtmlMail(hoaDon.getEmail(),subject, htmlBody);
     }
 }

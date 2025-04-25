@@ -8,12 +8,14 @@ import com.java.project.exceptions.EntityAlreadyExistsException;
 import com.java.project.exceptions.EntityNotFoundException;
 import com.java.project.exceptions.ResourceNotFoundException;
 import com.java.project.exceptions.RuntimeException;
+import com.java.project.helper.KhachHangHelper;
 import com.java.project.mappers.KhachHangMapper;
 import com.java.project.mappers.NhanVienMapper;
 import com.java.project.models.KhachHangCreateModel;
 import com.java.project.models.KhachHangUpdateModel;
 import com.java.project.repositories.KhachHangRepository;
 import com.java.project.request.ChangPasswordRequest;
+import com.java.project.request.DangKiTaiKhoanKhachHangRequest;
 import com.java.project.utils.RandomUtil;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,5 +177,34 @@ public class KhachHangService {
         String encodedNewPassword = passwordEncoder.encode(changPasswordRequest.getNewPassword());
         khachHang.setMat_khau(encodedNewPassword);
         return KhachHangMapper.toDTO(khachHangRepository.save(khachHang));
+    }
+
+    public KhachHangDto signUp(DangKiTaiKhoanKhachHangRequest request){
+            KhachHang khachHang = new KhachHang();
+
+            if(khachHangRepository.existsBySoDienThoai(request.getSoDienThoai())){
+                throw new RuntimeException("Phone number already exists");
+            }
+
+            if(khachHangRepository.existsByEmail(request.getEmail())){
+                throw new RuntimeException("Email already exists");
+            }
+
+            if(!request.getPassword().equals(request.getConfirmPassword())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Confirm password is not correct");
+            }
+
+            khachHang.setMaKhachHang(KhachHangHelper.createNhanVienHelper());
+            khachHang.setTenDangNhap(KhachHangHelper.createTenDangNhapHelper());
+            khachHang.setTenKhachHang(request.getTenKhachHang());
+            khachHang.setSoDienThoai(request.getSoDienThoai());
+            khachHang.setEmail(request.getEmail());
+
+            String encodedPassword = passwordEncoder.encode(request.getPassword());
+            khachHang.setMat_khau(encodedPassword);
+            khachHang.setTrangThai(1);
+
+
+            return KhachHangMapper.toDTO(khachHangRepository.save(khachHang));
     }
 }

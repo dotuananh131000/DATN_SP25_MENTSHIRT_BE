@@ -7,6 +7,7 @@ import com.java.project.request.APIRequestOrResponse;
 import com.java.project.request.HoaDonChiTietRequest;
 import com.java.project.services.BanHangService;
 import com.java.project.services.HoaDonChiTietService;
+import com.java.project.services.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,9 @@ public class HoaDonChiTietController {
 
     @Autowired
     HoaDonChiTietService hoaDonChiTietService;
+
+    @Autowired
+    HoaDonService hoaDonService;
 
     @GetMapping("/{id}")
     public List<HoaDonChiTietResponse>getAllHoaDonChiTietByHD(@PathVariable int id){
@@ -45,10 +49,11 @@ public class HoaDonChiTietController {
     }
 
     @DeleteMapping("/{id}")
-    public APIRequestOrResponse<String> delete (@PathVariable Integer id){
-        String message = hoaDonChiTietService.delete(id);
-        return APIRequestOrResponse.<String>builder()
-                .message(message)
+    public APIRequestOrResponse<List<HoaDonChiTietResponse>> delete (@PathVariable Integer id){
+        List<HoaDonChiTietResponse>listHdct = hoaDonChiTietService.delete(id);
+        return APIRequestOrResponse.<List<HoaDonChiTietResponse>>builder()
+                .message("Đã xóa sản phẩm ra khỏi đơn hàng")
+                .data(listHdct)
                 .build();
     }
 

@@ -39,6 +39,8 @@ public class VNPaymentService {
 
     PhieuGiamGiaRepository phieuGiamGiaRepository;
 
+    MailService mailService;
+
 
     public String generatePaymentUrl(String maHoaDon) throws UnsupportedEncodingException {
         // Lấy hóa đơn từ database
@@ -131,6 +133,7 @@ public class VNPaymentService {
             processPaymentAndUpdateStock(hoaDon);
             addTotal(hoaDon.getId(), amountFromVNPay);
             hoaDonRepository.save(hoaDon);
+            mailService.totaled(hoaDon);
             return "Giao dịch thành công";
         } else {
             return "Giao dịch thất bại, mã lỗi: " + vnpResponseCode;
