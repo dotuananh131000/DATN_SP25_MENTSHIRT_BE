@@ -52,6 +52,7 @@ public class HoaDonChiTietService {
 
         Optional<HoaDonChiTiet>hoaDonChiTietOptional = hoaDonChiTietRepository
                 .findByHoaDon_IdAndSanPhamChiTiet_Id(hoaDon.getId(), sanPhamChiTiet.getId());
+
         HoaDonChiTiet hoaDonChiTiet;
 
         // Cộng dồn khi sản phâ đã có trong giỏ hàng
@@ -75,16 +76,31 @@ public class HoaDonChiTietService {
     }
 
     @Transactional
-    public String delete (Integer idHoaDonChiTiet){
-        try {
+    public List<HoaDonChiTietResponse> delete (Integer idHoaDonChiTiet){
+
             HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(idHoaDonChiTiet)
                     .orElseThrow(() -> new EntityNotFoundException("Not found ProductDetail"));
-            hoaDonChiTietRepository.delete(hoaDonChiTiet);
-            return "Đã loại sản phẩm ra khỏi giỏ hàng";
-        } catch (RuntimeException ex){
-            return "Lỗi khi xóa sản phẩm trong giỏ hàng";
-        }
 
+            HoaDon hoaDon = hoaDonChiTiet.getHoaDon();
+
+            List<HoaDonChiTiet> listUpdate =
+                    hoaDonChiTietRepository.findByHoaDon_Id(hoaDon.getId());
+
+            SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+
+            if(hoaDonChiTiet.getTrangThai() == 1) {
+                int soLuongMoi = sanPhamChiTiet.getSoLuong() + hoaDonChiTiet.getSoLuong();
+                sanPhamChiTiet.setSoLuong(soLuongMoi);
+            }
+
+            listUpdate.remove(hoaDonChiTiet);
+
+            sanPhamChiTietRepository.save(sanPhamChiTiet);
+            hoaDonChiTietRepository.delete(hoaDonChiTiet);
+
+            return listUpdate.stream()
+                    .map(hoaDonChiTietMapper::toHoaDonChiTietResponse)
+                    .toList();
     }
 
 }

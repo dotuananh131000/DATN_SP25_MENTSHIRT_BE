@@ -7,6 +7,7 @@ import com.java.project.mappers.HoaDonMapper;
 import com.java.project.repositories.HoaDonChiTietRepository;
 import com.java.project.repositories.HoaDonRepository;
 import com.java.project.request.APIRequestOrResponse;
+import com.java.project.request.ThongTinDonHangRequest;
 import com.java.project.services.HoaDonService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -136,6 +137,22 @@ public class HoaDonController {
         return APIRequestOrResponse .<HoaDonResponse> builder()
                 .data(hoaDonService.paidInvoice(idHD))
                 .message("Hóa đơn đã được thanh toán")
+                .build();
+    }
+
+    @PutMapping("/updateInfo")
+    public APIRequestOrResponse<HoaDonResponse>updateInfoInvoice(@RequestBody ThongTinDonHangRequest request) {
+        return APIRequestOrResponse .<HoaDonResponse>builder()
+                .message("Đã cập nhật thông tin đn hàng thành công")
+                .data(hoaDonService.upDateThongTinDonHang(request))
+                .build();
+    }
+
+    @PutMapping("/cancel/{id}")
+    public APIRequestOrResponse<HoaDonResponse>cancelInvoice(@PathVariable Integer id){
+        return APIRequestOrResponse.<HoaDonResponse>builder()
+                .data(hoaDonService.huyDonHang(id))
+                .message("Đã hủy đơn hàng.")
                 .build();
     }
 }

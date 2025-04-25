@@ -8,6 +8,7 @@ import com.java.project.models.KhachHangCreateModel;
 import com.java.project.models.KhachHangUpdateModel;
 import com.java.project.request.APIRequestOrResponse;
 import com.java.project.request.ChangPasswordRequest;
+import com.java.project.request.DangKiTaiKhoanKhachHangRequest;
 import com.java.project.services.KhachHangService;
 import com.java.project.exceptions.EntityAlreadyExistsException;
 import com.java.project.exceptions.ResourceNotFoundException;
@@ -155,4 +156,11 @@ public class KhachHangConroller {
                 .build();
     }
 
+    @PostMapping("/sign-up")
+    public APIRequestOrResponse<KhachHangDto> signUp(@Valid @RequestBody DangKiTaiKhoanKhachHangRequest request) {
+        return APIRequestOrResponse .<KhachHangDto>builder()
+                .data(khachHangService.signUp(request))
+                .message("Đăng kí tài khoản thành công")
+                .build();
+    }
 }
