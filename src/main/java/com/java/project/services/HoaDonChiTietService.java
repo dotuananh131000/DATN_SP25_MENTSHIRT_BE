@@ -61,6 +61,7 @@ public class HoaDonChiTietService {
             hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + hoaDonChiTietRequest.getSoLuong());
             double newAddTotal = sanPhamChiTiet.getDonGia().doubleValue() *  hoaDonChiTietRequest.getSoLuong();
             hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() + newAddTotal);
+            hoaDon.setTongTien(hoaDon.getTongTien() + newAddTotal);
         }else {
             hoaDonChiTiet = new HoaDonChiTiet();
             Double thanhTien = (sanPhamChiTiet.getDonGia().doubleValue()) * hoaDonChiTietRequest.getSoLuong();
@@ -70,9 +71,19 @@ public class HoaDonChiTietService {
             hoaDonChiTiet.setSoLuong(hoaDonChiTietRequest.getSoLuong());
             hoaDonChiTiet.setThanhTien(thanhTien);
             hoaDonChiTiet.setTrangThai(0);
+            hoaDon.setTongTien(hoaDon.getTongTien() + thanhTien);
+        }
+        // Cộng dồn phụ phí
+        if(hoaDon.getTrangThai() == 1) {
+            BigDecimal phiHienTai = hoaDon.getPhuPhi() == null ? BigDecimal.ZERO : hoaDon.getPhuPhi();
+            hoaDon.setPhuPhi(phiHienTai.add(
+                    sanPhamChiTiet.getDonGia().multiply(BigDecimal.valueOf(hoaDonChiTietRequest.getSoLuong()))
+            ));
         }
 
+        hoaDonRepository.save(hoaDon);
         return hoaDonChiTietMapper.toHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
+
     }
 
     @Transactional
@@ -88,13 +99,16 @@ public class HoaDonChiTietService {
 
             SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
 
-            if(hoaDonChiTiet.getTrangThai() == 1) {
+            if(hoaDonChiTiet.getTrangThai() != null && hoaDonChiTiet.getTrangThai() == 1) {
                 int soLuongMoi = sanPhamChiTiet.getSoLuong() + hoaDonChiTiet.getSoLuong();
                 sanPhamChiTiet.setSoLuong(soLuongMoi);
+                hoaDon.setPhuPhi(hoaDon.getPhuPhi().subtract(BigDecimal.valueOf(hoaDonChiTiet.getThanhTien())));
             }
 
+            hoaDon.setTongTien(hoaDon.getTongTien() - hoaDonChiTiet.getThanhTien());
             listUpdate.remove(hoaDonChiTiet);
 
+            hoaDonRepository.save(hoaDon);
             sanPhamChiTietRepository.save(sanPhamChiTiet);
             hoaDonChiTietRepository.delete(hoaDonChiTiet);
 
