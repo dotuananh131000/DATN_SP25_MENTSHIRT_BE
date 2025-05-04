@@ -157,6 +157,7 @@ public class SanPhamChiTietService {
 
         // Cập nhật Đơn giá nếu có
         if (model.getDonGia() != null) {
+            sanPhamChiTiet.setDonGiaCu(sanPhamChiTiet.getDonGia());
             sanPhamChiTiet.setDonGia(model.getDonGia());
         }
 

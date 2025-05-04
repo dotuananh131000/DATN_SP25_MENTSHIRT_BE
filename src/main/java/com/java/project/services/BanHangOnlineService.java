@@ -44,7 +44,7 @@ public class BanHangOnlineService {
     public HoaDon addHoaDonOnline(HoaDonModel hoaDonModel){
         HoaDon hoaDon = new HoaDon();
         hoaDon.setMaHoaDon(HoaDonHelper.createHoaDonHelper());
-        hoaDon.setLoaiDon(0);
+        hoaDon.setLoaiDon(2); // Ddown hang f online
         hoaDon.setHoTenNguoiNhan(hoaDonModel.getHoTenNguoiNhan());
         hoaDon.setSoDienThoai(hoaDonModel.getSoDienThoai());
         hoaDon.setEmail(hoaDonModel.getEmail());

@@ -25,6 +25,7 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
             spct.mauSac.tenMauSac,
             spct.kichThuoc.tenKichThuoc,
             spct.donGia,
+            spct.donGiaCu,
             spct.soLuong,
             hdct.soLuong,
             hdct.thanhTien,

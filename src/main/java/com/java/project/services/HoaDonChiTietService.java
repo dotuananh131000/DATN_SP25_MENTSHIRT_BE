@@ -103,11 +103,11 @@ public class HoaDonChiTietService {
                 int soLuongMoi = sanPhamChiTiet.getSoLuong() + hoaDonChiTiet.getSoLuong();
                 sanPhamChiTiet.setSoLuong(soLuongMoi);
 
+                BigDecimal phuPhiCu = hoaDon.getPhuPhi() != null ? hoaDon.getPhuPhi() : BigDecimal.ZERO;
+
+                hoaDon.setPhuPhi(phuPhiCu.subtract(BigDecimal.valueOf(hoaDonChiTiet.getThanhTien())));
+
             }
-
-            hoaDon.setPhuPhi(hoaDon.getPhuPhi().subtract(BigDecimal.valueOf(hoaDonChiTiet.getThanhTien())));
-
-
 
             hoaDon.setTongTien(hoaDon.getTongTien() - hoaDonChiTiet.getThanhTien());
             listUpdate.remove(hoaDonChiTiet);
