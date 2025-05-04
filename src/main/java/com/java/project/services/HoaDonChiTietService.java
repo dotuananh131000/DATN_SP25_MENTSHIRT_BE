@@ -102,8 +102,12 @@ public class HoaDonChiTietService {
             if(hoaDonChiTiet.getTrangThai() != null && hoaDonChiTiet.getTrangThai() == 1) {
                 int soLuongMoi = sanPhamChiTiet.getSoLuong() + hoaDonChiTiet.getSoLuong();
                 sanPhamChiTiet.setSoLuong(soLuongMoi);
-                hoaDon.setPhuPhi(hoaDon.getPhuPhi().subtract(BigDecimal.valueOf(hoaDonChiTiet.getThanhTien())));
+
             }
+
+            hoaDon.setPhuPhi(hoaDon.getPhuPhi().subtract(BigDecimal.valueOf(hoaDonChiTiet.getThanhTien())));
+
+
 
             hoaDon.setTongTien(hoaDon.getTongTien() - hoaDonChiTiet.getThanhTien());
             listUpdate.remove(hoaDonChiTiet);
