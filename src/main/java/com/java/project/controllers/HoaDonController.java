@@ -78,10 +78,12 @@ public class HoaDonController {
     public APIRequestOrResponse<Page<HoaDonResponse>>getHoaDonKhachHangById(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String  keyword,
+            @RequestParam(required = false) Integer trangThaiGiaoHang,
             @PathVariable("id") Integer id){
         Pageable pageable = PageRequest.of(page, size);
         Page<HoaDonResponse> hoaDons =
-                hoaDonService.getHoaDonByIdKhachHang(pageable, id);
+                hoaDonService.getHoaDonByIdKhachHang(pageable, id, keyword, trangThaiGiaoHang);
         return APIRequestOrResponse. <Page<HoaDonResponse>>builder()
                 .data(hoaDons)
                 .build();

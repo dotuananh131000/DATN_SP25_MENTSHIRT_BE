@@ -57,6 +57,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
             kh.email
             )from KhachHang kh 
             where kh.trangThai =1
+            and (:keyword is null or lower(kh.soDienThoai) LIKE lower(concat('%', :keyword , '%' )))
             """)
-    List<KhachHangReponse> getAllKHByHD();
+    List<KhachHangReponse> getAllKHByHD(@Param("keyword") String keyword);
 }

@@ -118,7 +118,8 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             "AND (:minPrice IS NULL OR s.donGia >= :minPrice) " +
             "AND (:maxPrice IS NULL OR s.donGia <= :maxPrice)" +
             "AND sp.trangThai = true " +
-            "AND s.trangThai = true")
+            "AND s.trangThai = true " +
+            "ORDER BY s.id DESC ")
     Page<SanPhamChiTiet> findBySearchAndFilterIsActive(
             @Param("search") String search,
             @Param("thuongHieuIds") List<Integer> thuongHieuIds,

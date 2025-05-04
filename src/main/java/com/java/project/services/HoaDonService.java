@@ -58,8 +58,9 @@ public class HoaDonService {
         return hoaDonMapper.toHoaDonResponse(HoaDon) ;
     }
 
-    public Page<HoaDonResponse>getHoaDonByIdKhachHang(Pageable pageable, Integer id){
-        return hoaDonRepository.getListHoaDonByIdKH(pageable, id).map(hoaDonMapper::toHoaDonResponse);
+    public Page<HoaDonResponse>getHoaDonByIdKhachHang(Pageable pageable, Integer id, String keyword, Integer trangThaiGiaoHang){
+        return hoaDonRepository.getListHoaDonByIdKH(pageable, id, keyword, trangThaiGiaoHang)
+                .map(hoaDonMapper::toHoaDonResponse);
     }
 
 

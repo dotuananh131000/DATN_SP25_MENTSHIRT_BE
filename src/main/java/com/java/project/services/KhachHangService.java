@@ -16,6 +16,7 @@ import com.java.project.models.KhachHangUpdateModel;
 import com.java.project.repositories.KhachHangRepository;
 import com.java.project.request.ChangPasswordRequest;
 import com.java.project.request.DangKiTaiKhoanKhachHangRequest;
+import com.java.project.request.ThemNhanhKhachHangRequest;
 import com.java.project.utils.RandomUtil;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,5 +207,29 @@ public class KhachHangService {
 
 
             return KhachHangMapper.toDTO(khachHangRepository.save(khachHang));
+    }
+
+    public KhachHangDto themNhanhKhachHang (ThemNhanhKhachHangRequest request){
+        KhachHang khachHang = new KhachHang();
+
+        if(khachHangRepository.existsBySoDienThoai(request.getSoDienThoai())){
+            throw new RuntimeException("Phone number already exists");
+        }
+
+        if(khachHangRepository.existsByEmail(request.getEmail())){
+            throw new RuntimeException("Email already exists");
+        }
+
+        khachHang.setMaKhachHang(KhachHangHelper.createNhanVienHelper());
+        khachHang.setTenDangNhap(KhachHangHelper.createTenDangNhapHelper());
+        khachHang.setTenKhachHang(request.getTenKhachHang());
+        khachHang.setSoDienThoai(request.getSoDienThoai());
+        khachHang.setEmail(request.getEmail());
+
+        String generatedPassword = RandomUtil.generateRandomPassword();
+        khachHang.setMat_khau(passwordEncoder.encode(generatedPassword));
+        khachHang.setTrangThai(1);
+        mailService.sendNewPasswordMail(khachHang.getTenDangNhap(), khachHang.getEmail(), generatedPassword);
+        return KhachHangMapper.toDTO(khachHangRepository.save(khachHang));
     }
 }
