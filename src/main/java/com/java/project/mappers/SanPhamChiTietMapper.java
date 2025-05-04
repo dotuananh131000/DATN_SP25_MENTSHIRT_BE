@@ -14,6 +14,7 @@ public class SanPhamChiTietMapper {
                 .sanPham(SanPhamMapper.toDTO(sanPhamChiTiet.getSanPham(), 0))
                 .soLuong(sanPhamChiTiet.getSoLuong())
                 .donGia(sanPhamChiTiet.getDonGia())
+                .donGiaCu(sanPhamChiTiet.getDonGiaCu())
                 .ngayTao(sanPhamChiTiet.getNgayTao())
                 .trangThai(sanPhamChiTiet.getTrangThai())
                 .coAo(CoAoMapper.toDTO(sanPhamChiTiet.getCoAo()))

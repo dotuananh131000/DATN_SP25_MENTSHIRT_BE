@@ -44,7 +44,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "WHERE hd.khachHang.id = :id " +
             "AND (:keyword IS NULL OR LOWER(hd.maHoaDon) LIKE LOWER(CONCAT('%', :keyword , '%' ))) " +
             "AND (:trangThaiGiaoHang IS NULL OR hd.trangThaiGiaoHang = :trangThaiGiaoHang ) " +
-            "AND hd.loaiDon = 0 " +
+            "AND (hd.loaiDon = 0 OR hd.loaiDon = 2) " +
             "ORDER BY hd.ngayTao DESC ")
     Page<HoaDon>getListHoaDonByIdKH(Pageable pageable, @Param("id") Integer id,
                                     @Param("keyword") String keyword,

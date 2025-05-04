@@ -70,7 +70,6 @@ public class SanPhamChiTiet {
     @Column(name = "don_gia", nullable = false, precision = 18, scale = 2)
     private BigDecimal donGia;
 
-    @NotNull
     @Column(name = "don_gia_cu", nullable = false, precision = 18, scale = 2)
     private BigDecimal donGiaCu;
 

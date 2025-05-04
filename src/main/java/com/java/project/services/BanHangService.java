@@ -200,23 +200,27 @@ public class BanHangService {
         if(getIsPresent.isPresent()){
             hoaDonChiTiet = getIsPresent.get();
             hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + hdctRequest.getSoLuong());
+
+            BigDecimal donGia = sanPhamChiTiet.getDonGia();
+            BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(hdctRequest.getSoLuong()));
+
+            hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() + thanhTien.doubleValue());
         }else {
             hoaDonChiTiet = new HoaDonChiTiet();
             BeanUtils.copyProperties(hdctRequest, hoaDonChiTiet);
             hoaDonChiTiet.setHoaDon(hoaDon);
             hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
-            hoaDonChiTiet.setTrangThai(1);
-        }
-
-        if(hdctRequest.getSoLuong() != null && sanPhamChiTiet != null){
             BigDecimal donGia = sanPhamChiTiet.getDonGia();
             BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong()));
 
             hoaDonChiTiet.setThanhTien(thanhTien.doubleValue());
-        }else {
-            throw  new IllegalArgumentException("Số lượng sản phẩm không hợp lệ");
         }
-        updateSoLuongSPCT(sanPhamChiTiet.getId(),hdctRequest.getSoLuong());
+
+       if(hoaDon.getLoaiDon() != 2){
+           hoaDonChiTiet.setTrangThai(1);
+           updateSoLuongSPCT(sanPhamChiTiet.getId(),hdctRequest.getSoLuong());
+       }
+
         return hoaDonChiTietRepository.save(hoaDonChiTiet);
     }
 
@@ -252,19 +256,45 @@ public class BanHangService {
         HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(id).
                 orElseThrow(()->new EntityNotFoundException("Không tìm thấy hóa đơn chi tiết với id " + id));
 
+        HoaDon hoaDon = hoaDonChiTiet.getHoaDon();
+
         if(hoaDonChiTiet.getSoLuong() != newQuantity){
             Integer khoangSoLuongThayDoi = Math.abs(hoaDonChiTiet.getSoLuong() - newQuantity);
-            if(hoaDonChiTiet.getSoLuong() > newQuantity){
-                updateSoLuongSPCT(hoaDonChiTiet.getSanPhamChiTiet().getId(), - khoangSoLuongThayDoi);
+
+            if(hoaDon.getLoaiDon() != 2){ // nếu hóa đơn không phai online
+                if(hoaDonChiTiet.getSoLuong() > newQuantity){
+                    updateSoLuongSPCT(hoaDonChiTiet.getSanPhamChiTiet().getId(), - khoangSoLuongThayDoi);
+
+                    BigDecimal donGia = hoaDonChiTiet.getSanPhamChiTiet().getDonGia();
+                    BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(khoangSoLuongThayDoi));
+
+                    hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() + thanhTien.doubleValue());
+                }else {
+                    updateSoLuongSPCT(hoaDonChiTiet.getSanPhamChiTiet().getId(), khoangSoLuongThayDoi);
+
+                    BigDecimal donGia = hoaDonChiTiet.getSanPhamChiTiet().getDonGia();
+                    BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(khoangSoLuongThayDoi));
+
+                    hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() - thanhTien.doubleValue());
+                }
             }else {
-                updateSoLuongSPCT(hoaDonChiTiet.getSanPhamChiTiet().getId(), khoangSoLuongThayDoi);
+                if(hoaDonChiTiet.getSoLuong() > newQuantity){
+
+                    BigDecimal donGia = hoaDonChiTiet.getSanPhamChiTiet().getDonGia();
+                    BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(khoangSoLuongThayDoi));
+
+                    hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() + thanhTien.doubleValue());
+                }else {
+
+                    BigDecimal donGia = hoaDonChiTiet.getSanPhamChiTiet().getDonGia();
+                    BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(khoangSoLuongThayDoi));
+
+                    hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() - thanhTien.doubleValue());
+                }
             }
 
             hoaDonChiTiet.setSoLuong(newQuantity);
-            BigDecimal donGia = hoaDonChiTiet.getSanPhamChiTiet().getDonGia();
-            BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(newQuantity));
 
-            hoaDonChiTiet.setThanhTien(thanhTien.doubleValue());
             updateTongTienHoaDon(hoaDonChiTiet.getHoaDon().getId());
 
             return hoaDonChiTietRepository.save(hoaDonChiTiet);
@@ -279,9 +309,14 @@ public class BanHangService {
 
         SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(hoaDonChiTiet.getSanPhamChiTiet().getId())
                 .orElseThrow(()->new EntityNotFoundException("Không thể tìm thấy spct"));
-        Integer soLuongTraVe = hoaDonChiTiet.getSoLuong();
-        if(soLuongTraVe != 0){
-            updateSoLuongSPCT(sanPhamChiTiet.getId(), - soLuongTraVe);
+
+        HoaDon hoaDon = hoaDonChiTiet.getHoaDon();
+
+        if(hoaDon.getLoaiDon() == 1 || hoaDon.getLoaiDon() == 0){
+            Integer soLuongTraVe = hoaDonChiTiet.getSoLuong();
+            if(soLuongTraVe != 0){
+                updateSoLuongSPCT(sanPhamChiTiet.getId(), - soLuongTraVe);
+            }
         }
 
         hoaDonChiTietRepository.deleteById(id);

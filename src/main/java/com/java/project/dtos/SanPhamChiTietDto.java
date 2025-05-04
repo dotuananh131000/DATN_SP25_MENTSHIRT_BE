@@ -25,6 +25,7 @@ public class SanPhamChiTietDto implements Serializable {
     XuatXuDto xuatXu;
     Integer soLuong;
     BigDecimal donGia;
+    BigDecimal donGiaCu;
     String hinhAnh;
     Instant ngayTao;
     Boolean trangThai;

@@ -20,6 +20,7 @@ public class HoaDonChiTietResponse {
     private String tenMauSac;
     private String tenKichThuoc;
     private BigDecimal donGia;
+    private BigDecimal donGiaCu;
     private Integer soLuongTon;
     private Integer soLuong;
     private Double thanhTien;
