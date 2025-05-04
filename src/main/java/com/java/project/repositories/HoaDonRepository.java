@@ -42,9 +42,13 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN NhanVien nv ON hd.nhanVien.id = nv.id " +
             "LEFT JOIN PhieuGiamGia pgg ON hd.phieuGiamGia.id = pgg.id " +
             "WHERE hd.khachHang.id = :id " +
+            "AND (:keyword IS NULL OR LOWER(hd.maHoaDon) LIKE LOWER(CONCAT('%', :keyword , '%' ))) " +
+            "AND (:trangThaiGiaoHang IS NULL OR hd.trangThaiGiaoHang = :trangThaiGiaoHang ) " +
             "AND hd.loaiDon = 0 " +
             "ORDER BY hd.ngayTao DESC ")
-    Page<HoaDon>getListHoaDonByIdKH(Pageable pageable, @Param("id") Integer id);
+    Page<HoaDon>getListHoaDonByIdKH(Pageable pageable, @Param("id") Integer id,
+                                    @Param("keyword") String keyword,
+                                    @Param("trangThaiGiaoHang") Integer trangThaiGiaoHang);
 
 
     @Query("""

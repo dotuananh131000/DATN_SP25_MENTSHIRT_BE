@@ -201,8 +201,8 @@ public class BanHangController {
     }
 
     @GetMapping("/khach-hang")
-    public List<KhachHangReponse>getAll(){
-        return khachHangRepository.getAllKHByHD();
+    public List<KhachHangReponse>getAll(@RequestParam(required = false) String keyword){
+        return khachHangRepository.getAllKHByHD(keyword);
     }
 
     @GetMapping("/phieu-giam-gia")
