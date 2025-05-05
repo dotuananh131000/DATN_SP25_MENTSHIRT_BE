@@ -49,7 +49,7 @@ public interface PhieuGiamGiaRepository extends JpaRepository<PhieuGiamGia, Inte
     @Query("SELECT pgg " +
             "FROM PhieuGiamGia pgg " +
             "LEFT JOIN PhieuGiamGiaKhachHang pggkh " +
-            "ON pgg.id = pggkh.idVoucher.id AND (pggkh.idKhachHang = :idKH OR pggkh.idKhachHang IS NULL) " +
+            "ON pgg.id = pggkh.idVoucher.id AND (pggkh.idKhachHang.id = :idKH OR pggkh.idKhachHang IS NULL) " +
             "WHERE (pgg.loaiGiam = 0 OR pggkh.idKhachHang IS NOT NULL)" +
             "AND pgg.thoiGianApDung <= current_timestamp " +
             "AND pgg.thoiGianHetHan >= current_timestamp ")

@@ -75,9 +75,9 @@ public class PhieuGiamGiaService {
         phieuGiamGia.setNgayTao(LocalDateTime.now());
         phieuGiamGia.setTrangThai(1);
 
-        if(model.getLoaiGiam()==0){
+        if(model.getLoaiGiam()== 0){
             List<Integer> khachHangIds = khachHangRepository.getAllId();
-            phieuGiamGia.setSoLuong(khachHangIds.size());
+//            phieuGiamGia.setSoLuong(khachHangIds.size());
             model.setKhachHangId(khachHangIds);
         }
 
