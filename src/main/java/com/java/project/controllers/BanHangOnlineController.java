@@ -31,8 +31,8 @@ public class BanHangOnlineController {
 
     HoaDonMapper hoaDonMapper;
 
-    @GetMapping("/phieu-giam-gia/{idKH}")
-    public APIRequestOrResponse<List<PhieuGiamGiaDto>>getPhieuGiamGia(@PathVariable("idKH") Integer idKH){
+    @GetMapping("/phieu-giam-gia")
+    public APIRequestOrResponse<List<PhieuGiamGiaDto>>getPhieuGiamGia(@RequestParam(required = false) Integer idKH){
         List<PhieuGiamGiaDto> listPhieuGiamGia = banHangOnlineService.getPhieuGiamGiaByKH(idKH);
         return APIRequestOrResponse.<List<PhieuGiamGiaDto>>builder()
                 .data(listPhieuGiamGia)

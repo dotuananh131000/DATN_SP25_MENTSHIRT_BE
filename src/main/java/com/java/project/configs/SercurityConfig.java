@@ -32,7 +32,7 @@ public class SercurityConfig {
             , "/san-pham-chi-tiet/thuoc-tinh", "/san-pham-chi-tiet/chi-tiet"
             , "/san-pham", "/api/thuong-hieu", "/api/chat-lieu", "/api/co-ao"
             , "/api/kich-thuoc", "/api/mau-sac", "/api/tay-ao", "/api/xuat-xu"
-            , "/api/khach-hang/myAccount", "/phieu-giam-gia/**", "/creatOrder"
+            , "/api/khach-hang/myAccount", "/phieu-giam-gia", "/creatOrder"
             , "/api/hoa-don/khach-hang/**", "/api/dia-chi/khach-hang/**"
             , "/api/dia-chi/set-default/**", "/api/dia-chi", "/api/dia-chi/**"
             , "/payment/vnpay-callback", "/payment/handle-response", "/payment/create-payment-url/**"
