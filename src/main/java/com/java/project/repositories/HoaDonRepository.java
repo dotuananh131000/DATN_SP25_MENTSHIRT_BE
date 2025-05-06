@@ -13,7 +13,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +48,13 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     Page<HoaDon>getListHoaDonByIdKH(Pageable pageable, @Param("id") Integer id,
                                     @Param("keyword") String keyword,
                                     @Param("trangThaiGiaoHang") Integer trangThaiGiaoHang);
+
+    @Query("SELECT hd.id, COUNT(hdct.id) FROM HoaDon hd " +
+            "LEFT JOIN HoaDonChiTiet hdct ON hd.id = hdct.hoaDon.id " +
+            "WHERE CAST(hd.ngayTao AS DATE) = CAST(CURRENT_DATE AS DATE) " +
+            "AND hd.trangThaiGiaoHang = 8 " +
+            "GROUP BY hd.id ")
+    List<Object[]>getHoaDonCho();
 
 
     @Query("""

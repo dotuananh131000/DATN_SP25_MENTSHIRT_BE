@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -61,6 +60,18 @@ public class HoaDonService {
     public Page<HoaDonResponse>getHoaDonByIdKhachHang(Pageable pageable, Integer id, String keyword, Integer trangThaiGiaoHang){
         return hoaDonRepository.getListHoaDonByIdKH(pageable, id, keyword, trangThaiGiaoHang)
                 .map(hoaDonMapper::toHoaDonResponse);
+    }
+
+    public List<Object>getHoaDonCho(){
+        List<Object>list = new ArrayList<>();
+
+        for (Object[] obj : hoaDonRepository.getHoaDonCho()){
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", obj[0]);
+            map.put("soLuong", obj[1]);
+            list.add(map);
+        }
+        return list;
     }
 
 

@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.NumberFormat;
@@ -39,7 +40,6 @@ public class HoaDonController {
 
     HoaDonMapper hoaDonMapper;
 
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @GetMapping
     public APIRequestOrResponse<Page<HoaDonResponse>>
@@ -66,6 +66,8 @@ public class HoaDonController {
                 .build();
     }
 
+
+
     @GetMapping("/{id}")
     public APIRequestOrResponse<HoaDonResponse>getHoaDonById(
             @PathVariable("id") Integer id){
@@ -86,6 +88,13 @@ public class HoaDonController {
                 hoaDonService.getHoaDonByIdKhachHang(pageable, id, keyword, trangThaiGiaoHang);
         return APIRequestOrResponse. <Page<HoaDonResponse>>builder()
                 .data(hoaDons)
+                .build();
+    }
+
+    @GetMapping("/cho")
+    public APIRequestOrResponse<List<Object>>getHoaDonCho(){
+        return APIRequestOrResponse.<List<Object>>builder()
+                .data(hoaDonService.getHoaDonCho())
                 .build();
     }
 
