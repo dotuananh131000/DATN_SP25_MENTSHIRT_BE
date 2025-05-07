@@ -7,6 +7,7 @@ import com.java.project.entities.HoaDon;
 import com.java.project.entities.HoaDonChiTiet;
 import com.java.project.entities.NhanVien;
 import com.java.project.entities.SanPhamChiTiet;
+import com.java.project.helper.HoaDonHelper;
 import com.java.project.mappers.HoaDonMapper;
 import com.java.project.repositories.HoaDonChiTietRepository;
 import com.java.project.repositories.HoaDonRepository;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -40,6 +42,22 @@ public class HoaDonService {
     HoaDonChiTietRepository hoaDonChiTietRepository;
 
     SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    public HoaDonResponse add(Integer idNhanVien) {
+
+        NhanVien nhanVien = nhanVienRepository.findById(idNhanVien)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấynhaann viên với id là " + idNhanVien));
+
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setNhanVien(nhanVien);
+        hoaDon.setMaHoaDon(HoaDonHelper.createHoaDonHelper());
+        hoaDon.setLoaiDon(1); // Default hóa đơn tại quầy
+        hoaDon.setTrangThaiGiaoHang(8); // Default hóa đơn đang chờ
+        hoaDon.setNgayTao(LocalDateTime.now());
+        hoaDon.setTrangThai(0); // Default hóa đơn chưa thanh toán
+
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+     }
 
 
     public Page<HoaDonResponse>getHoaDonList(Pageable pageable,
