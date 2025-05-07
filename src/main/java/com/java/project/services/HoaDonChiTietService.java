@@ -59,6 +59,8 @@ public class HoaDonChiTietService {
         Optional<HoaDonChiTiet>getIsPresent = hoaDonChiTietRepository
                 .findByHoaDon_IdAndSanPhamChiTiet_Id(hdctRequest.getIdHoaDon(),hdctRequest.getIdSPCT());
 
+        Double tongTienHoaDon = hoaDon.getTongTien() != null ? hoaDon.getTongTien() : 0.0;
+
         if(getIsPresent.isPresent()){
             hoaDonChiTiet = getIsPresent.get();
             if(hoaDon.getLoaiDon() == 2){
@@ -70,7 +72,9 @@ public class HoaDonChiTietService {
                     BigDecimal donGia = sanPhamChiTiet.getDonGia();
                     BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(hdctRequest.getSoLuong()));
 
-                    hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() + thanhTien.doubleValue());
+                    Double thanhTienMoi = hoaDonChiTiet.getThanhTien() + thanhTien.doubleValue();
+                    hoaDonChiTiet.setThanhTien(thanhTienMoi);
+                    hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
                 }else {
                     hoaDonChiTiet = new HoaDonChiTiet();
                     BeanUtils.copyProperties(hdctRequest, hoaDonChiTiet);
@@ -80,6 +84,7 @@ public class HoaDonChiTietService {
                     BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong()));
 
                     hoaDonChiTiet.setThanhTien(thanhTien.doubleValue());
+                    hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
                 }
             }else {
                 hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + hdctRequest.getSoLuong());
@@ -88,6 +93,7 @@ public class HoaDonChiTietService {
                 BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(hdctRequest.getSoLuong()));
 
                 hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() + thanhTien.doubleValue());
+                hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
             }
 
         }else {
@@ -99,6 +105,7 @@ public class HoaDonChiTietService {
             BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong()));
 
             hoaDonChiTiet.setThanhTien(thanhTien.doubleValue());
+            hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
         }
 
         if(hoaDon.getLoaiDon() != 2){
@@ -110,11 +117,11 @@ public class HoaDonChiTietService {
                 BigDecimal thanhTien =
                         hoaDonChiTiet.getSanPhamChiTiet().getDonGia().multiply(BigDecimal.valueOf(hdctRequest.getSoLuong()));
                 hoaDon.setPhuPhi(hoaDon.getPhuPhi().add(thanhTien));
-                hoaDonRepository.save(hoaDon);
+
             }
 
         }
-
+        hoaDonRepository.save(hoaDon);
         return hoaDonChiTietMapper.toHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
     }
 
@@ -147,8 +154,8 @@ public class HoaDonChiTietService {
             }
 
 
-
-            hoaDon.setTongTien(hoaDon.getTongTien() - hoaDonChiTiet.getThanhTien());
+            Double tongTienPre = hoaDon.getTongTien() != null ? hoaDon.getTongTien() : 0.0;
+            hoaDon.setTongTien(tongTienPre - hoaDonChiTiet.getThanhTien());
             listUpdate.remove(hoaDonChiTiet);
 
             hoaDonRepository.save(hoaDon);
