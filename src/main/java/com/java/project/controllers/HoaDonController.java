@@ -40,6 +40,13 @@ public class HoaDonController {
 
     HoaDonMapper hoaDonMapper;
 
+    @PostMapping
+    public APIRequestOrResponse<HoaDonResponse>add(@RequestBody Integer idNhanVien){
+        return APIRequestOrResponse .<HoaDonResponse>builder()
+                .data(hoaDonService.add(idNhanVien))
+                .build();
+    }
+
 
     @GetMapping
     public APIRequestOrResponse<Page<HoaDonResponse>>
