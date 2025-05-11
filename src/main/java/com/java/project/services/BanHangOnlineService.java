@@ -41,6 +41,42 @@ public class BanHangOnlineService {
                 .toList();
     }
 
+    // Lấy phiếu giảm giá tốt nhất cho khách hàng
+    public PhieuGiamGiaDto theBestVoucher (Integer idKH, Double tongTien) {
+        List<PhieuGiamGiaDto> list = getPhieuGiamGiaByKH(idKH);
+
+        PhieuGiamGiaDto phieuGiamGiaDto = null;
+
+        Double tienGiamTotNhat = 0.0;
+
+        for (PhieuGiamGiaDto pgg : list) {
+            Double tienGiam = 0.0;
+
+            // Bỏ qua các phiếu không đủ điều kieenj
+            if(tongTien < pgg.getSoTienToiThieuHd()){
+                continue;
+            }
+
+            if(pgg.getHinhThucGiamGia() == 0) {
+                Double tinhTienGiam = tongTien * (pgg.getGiaTriGiam() / 100);
+
+                tienGiam = Math.min(tinhTienGiam, pgg.getSoTienGiamToiDa());
+
+
+            }else if(pgg.getHinhThucGiamGia() == 1) {
+                tienGiam = pgg.getGiaTriGiam();
+            }
+
+            if(tienGiam.compareTo(tienGiamTotNhat) > 0) {
+                tienGiamTotNhat = tienGiam;
+                phieuGiamGiaDto = pgg;
+            }
+
+        }
+
+        return phieuGiamGiaDto;
+    }
+
     public HoaDon addHoaDonOnline(HoaDonModel hoaDonModel){
         HoaDon hoaDon = new HoaDon();
         hoaDon.setMaHoaDon(HoaDonHelper.createHoaDonHelper());

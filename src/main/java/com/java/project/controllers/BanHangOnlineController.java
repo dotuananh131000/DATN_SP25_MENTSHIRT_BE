@@ -39,6 +39,16 @@ public class BanHangOnlineController {
                 .build();
     }
 
+    @GetMapping("/phieu-giam-gia-tot-nhat")
+    public APIRequestOrResponse<PhieuGiamGiaDto>getTheBestVoucher(
+            @RequestParam(required = false) Integer idKH,
+            @RequestParam(required = false) Double tongTien){
+        PhieuGiamGiaDto phieuGiamGiaDto = banHangOnlineService.theBestVoucher(idKH, tongTien);
+        return APIRequestOrResponse .<PhieuGiamGiaDto> builder()
+                .data(phieuGiamGiaDto)
+                .build();
+    }
+
     @PostMapping("/creatOrder")
     public APIRequestOrResponse<HoaDon>createOrder(@Valid @RequestBody HoaDonModel hoaDonModel){
         HoaDon hoaDon = banHangOnlineService.addHoaDonOnline(hoaDonModel);

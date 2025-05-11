@@ -3,16 +3,10 @@ package com.java.project.services;
 import com.java.project.dtos.HoaDonBanHangResponse;
 import com.java.project.dtos.HoaDonHomNayResponse;
 import com.java.project.dtos.HoaDonResponse;
-import com.java.project.entities.HoaDon;
-import com.java.project.entities.HoaDonChiTiet;
-import com.java.project.entities.NhanVien;
-import com.java.project.entities.SanPhamChiTiet;
+import com.java.project.entities.*;
 import com.java.project.helper.HoaDonHelper;
 import com.java.project.mappers.HoaDonMapper;
-import com.java.project.repositories.HoaDonChiTietRepository;
-import com.java.project.repositories.HoaDonRepository;
-import com.java.project.repositories.NhanVienRepository;
-import com.java.project.repositories.SanPhamChiTietRepository;
+import com.java.project.repositories.*;
 import com.java.project.request.ThongTinDonHangRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
@@ -42,6 +36,8 @@ public class HoaDonService {
     HoaDonChiTietRepository hoaDonChiTietRepository;
 
     SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    KhachHangRepository khachHangRepository;
 
     public HoaDonResponse add(Integer idNhanVien) {
 
@@ -211,6 +207,24 @@ public class HoaDonService {
         sanPhamChiTietRepository.saveAll(sanPhamUpdate);
         return hoaDonMapper.toHoaDonResponse(hoaDon);
     }
+
+    public HoaDonResponse chonKhachHangVaoHoaDon (Integer idHoaDon, Integer idKH) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found for id " + idHoaDon));
+        KhachHang khachHang = khachHangRepository.findById(idKH)
+                        .orElseThrow(() -> new EntityNotFoundException("Customer not found for id " + idKH));
+        hoaDon.setKhachHang(khachHang);
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+    }
+
+    public HoaDonResponse removeKhachHang (Integer idHoaDon) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found for id " + idHoaDon));
+        hoaDon.setKhachHang(null);
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+    }
+
+
 
 
 }
