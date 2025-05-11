@@ -173,4 +173,23 @@ public class HoaDonController {
                 .message("Đã hủy đơn hàng.")
                 .build();
     }
+
+    @PutMapping("/chon-khach-hang/{idHD}")
+    public APIRequestOrResponse<HoaDonResponse>hoaDonChonKhachHang(
+            @PathVariable Integer idHD,
+            @RequestBody Integer idKH){
+        return APIRequestOrResponse .<HoaDonResponse> builder()
+                .data(hoaDonService.chonKhachHangVaoHoaDon(idHD, idKH))
+                .message("Đã chọn khách hàng vào hóa đơn")
+                .build();
+    }
+
+    @PutMapping("/bo-khach-hang/{idHD}")
+    public APIRequestOrResponse<HoaDonResponse>boKhachHang(
+            @PathVariable Integer idHD){
+        return APIRequestOrResponse .<HoaDonResponse> builder()
+                .data(hoaDonService.removeKhachHang(idHD))
+                .message("Đã bỏ chọn khách hàng")
+                .build();
+    }
 }
