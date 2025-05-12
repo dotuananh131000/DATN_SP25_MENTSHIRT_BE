@@ -7,6 +7,7 @@ import com.java.project.mappers.HoaDonMapper;
 import com.java.project.repositories.HoaDonChiTietRepository;
 import com.java.project.repositories.HoaDonRepository;
 import com.java.project.request.APIRequestOrResponse;
+import com.java.project.request.ConfirmHoaDonRequest;
 import com.java.project.request.ThongTinDonHangRequest;
 import com.java.project.services.HoaDonService;
 import lombok.AccessLevel;
@@ -199,6 +200,14 @@ public class HoaDonController {
         return APIRequestOrResponse .<HoaDonResponse> builder()
                 .data(hoaDonService.doiLoaiDon(idHD))
                 .message("Đã đổi loại đơn")
+                .build();
+    }
+
+    @PutMapping("/confirm-hoa-don/{idHD}")
+    public APIRequestOrResponse<HoaDonResponse>confirmHoaDon(@PathVariable Integer idHD,
+                                                             @RequestBody ConfirmHoaDonRequest request){
+        return APIRequestOrResponse .<HoaDonResponse> builder()
+                .data(hoaDonService.confirmHoaDon(idHD, request))
                 .build();
     }
 }
