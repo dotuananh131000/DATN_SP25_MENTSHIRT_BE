@@ -7,6 +7,7 @@ import com.java.project.entities.*;
 import com.java.project.helper.HoaDonHelper;
 import com.java.project.mappers.HoaDonMapper;
 import com.java.project.repositories.*;
+import com.java.project.request.ConfirmHoaDonRequest;
 import com.java.project.request.ThongTinDonHangRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -228,6 +230,26 @@ public class HoaDonService {
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found for id " + idHoaDon));
         hoaDon.setLoaiDon(hoaDon.getLoaiDon() == 0? 1:0);
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+    }
+
+    @Transactional
+    public HoaDonResponse confirmHoaDon (Integer idHoaDon, ConfirmHoaDonRequest confirmHoaDonRequest) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found for id " + idHoaDon));
+        hoaDon.setHoTenNguoiNhan(confirmHoaDonRequest.getHoTenNguoiNhan());
+        hoaDon.setSoDienThoai(confirmHoaDonRequest.getSoDienThoai());
+        hoaDon.setEmail(confirmHoaDonRequest.getEmail());
+        hoaDon.setDiaChiNhanHang(confirmHoaDonRequest.getDiaChiNhanHang());
+        hoaDon.setPhiShip(confirmHoaDonRequest.getPhiShip());
+        hoaDon.setTongTien(confirmHoaDonRequest.getTongTien());
+        hoaDon.setTrangThai(1);
+        if(hoaDon.getLoaiDon() == 0){
+            hoaDon.setTrangThaiGiaoHang(2);
+        }else {
+            hoaDon.setTrangThaiGiaoHang(9);
+        }
+
         return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 
