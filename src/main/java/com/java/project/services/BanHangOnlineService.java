@@ -1,11 +1,13 @@
 package com.java.project.services;
 
+import com.java.project.dtos.HoaDonResponse;
 import com.java.project.dtos.PhieuGiamGiaDto;
 import com.java.project.entities.HoaDon;
 import com.java.project.entities.HoaDonChiTiet;
 import com.java.project.entities.PhieuGiamGia;
 import com.java.project.entities.SanPhamChiTiet;
 import com.java.project.helper.HoaDonHelper;
+import com.java.project.mappers.HoaDonMapper;
 import com.java.project.mappers.PhieuGiamGiaMapper;
 import com.java.project.repositories.*;
 import com.java.project.request.HoaDonChiTietModel;
@@ -31,6 +33,7 @@ public class BanHangOnlineService {
     PhieuGiamGiaRepository phieuGiamGiaRepository;
     KhachHangRepository khachHangRepository;
     HoaDonRepository hoaDonRepository;
+    HoaDonMapper hoaDonMapper;
     SanPhamChiTietRepository sanPhamChiTietRepository;
     HoaDonChiTietRepository hoaDonChiTietRepository;
 
@@ -95,6 +98,21 @@ public class BanHangOnlineService {
 
 
         return phieuGiamGiaTotNhat;
+    }
+
+    @Transactional
+    public HoaDonResponse hoanPhieuGiam(Integer idHD, Double tongTien) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHD)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found by id" + idHD));
+        PhieuGiamGia phieuGiamGia = hoaDon.getPhieuGiamGia();
+        if(phieuGiamGia != null) {
+            if(tongTien <= 0.0){
+                phieuGiamGia.setSoLuong(phieuGiamGia.getSoLuong() + 1);
+                hoaDon.setPhieuGiamGia(null);
+            }
+        }
+        phieuGiamGiaRepository.save(phieuGiamGia);
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 
 

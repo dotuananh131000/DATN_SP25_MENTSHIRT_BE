@@ -60,6 +60,16 @@ public class BanHangOnlineController {
                 .build();
     }
 
+    @PutMapping("/hoanPhieuGiam/{idHD}")
+    public APIRequestOrResponse<HoaDonResponse>getTheBestVoucher(
+            @PathVariable Integer idHD,
+            @RequestBody Double tongTien){
+        HoaDonResponse hoaDonResponse = banHangOnlineService.hoanPhieuGiam(idHD, tongTien);
+        return APIRequestOrResponse .<HoaDonResponse> builder()
+                .data(hoaDonResponse)
+                .build();
+    }
+
     @PostMapping("/creatOrder")
     public APIRequestOrResponse<HoaDon>createOrder(@Valid @RequestBody HoaDonModel hoaDonModel){
         HoaDon hoaDon = banHangOnlineService.addHoaDonOnline(hoaDonModel);
