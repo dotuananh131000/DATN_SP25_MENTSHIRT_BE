@@ -4,7 +4,9 @@ import com.java.project.dtos.HoaDonResponse;
 import com.java.project.dtos.KhachHangDto;
 import com.java.project.dtos.PhieuGiamGiaDto;
 import com.java.project.entities.HoaDon;
+import com.java.project.entities.PhieuGiamGia;
 import com.java.project.mappers.HoaDonMapper;
+import com.java.project.mappers.PhieuGiamGiaMapper;
 import com.java.project.request.APIRequestOrResponse;
 import com.java.project.request.HoaDonModel;
 import com.java.project.services.BanHangOnlineService;
@@ -17,6 +19,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping
@@ -31,21 +34,29 @@ public class BanHangOnlineController {
 
     HoaDonMapper hoaDonMapper;
 
+
     @GetMapping("/phieu-giam-gia")
     public APIRequestOrResponse<List<PhieuGiamGiaDto>>getPhieuGiamGia(@RequestParam(required = false) Integer idKH){
-        List<PhieuGiamGiaDto> listPhieuGiamGia = banHangOnlineService.getPhieuGiamGiaByKH(idKH);
+        List<PhieuGiamGia> listPhieuGiamGia = banHangOnlineService.getPhieuGiamGiaByKH(idKH);
+
+        // Mapping từ Entity -> DTO
+        List<PhieuGiamGiaDto> listDto = listPhieuGiamGia.stream()
+                .map(PhieuGiamGiaMapper::toDTO)
+                .collect(Collectors.toList());
+
         return APIRequestOrResponse.<List<PhieuGiamGiaDto>>builder()
-                .data(listPhieuGiamGia)
+                .data(listDto)
                 .build();
     }
 
     @GetMapping("/phieu-giam-gia-tot-nhat")
     public APIRequestOrResponse<PhieuGiamGiaDto>getTheBestVoucher(
             @RequestParam(required = false) Integer idKH,
+            @RequestParam(required = true) Integer idHD,
             @RequestParam(required = false) Double tongTien){
-        PhieuGiamGiaDto phieuGiamGiaDto = banHangOnlineService.theBestVoucher(idKH, tongTien);
+        PhieuGiamGia phieuGiamGia = banHangOnlineService.theBestVoucher(idKH, idHD, tongTien);
         return APIRequestOrResponse .<PhieuGiamGiaDto> builder()
-                .data(phieuGiamGiaDto)
+                .data(PhieuGiamGiaMapper.toDTO(phieuGiamGia))
                 .build();
     }
 

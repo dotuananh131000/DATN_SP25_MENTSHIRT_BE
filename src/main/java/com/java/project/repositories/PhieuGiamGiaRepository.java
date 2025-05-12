@@ -52,6 +52,7 @@ public interface PhieuGiamGiaRepository extends JpaRepository<PhieuGiamGia, Inte
             "ON pgg.id = pggkh.idVoucher.id AND (pggkh.idKhachHang.id = :idKH OR pggkh.idKhachHang IS NULL) " +
             "WHERE (pgg.loaiGiam = 0 OR pggkh.idKhachHang IS NOT NULL)" +
             "AND pgg.thoiGianApDung <= current_timestamp " +
-            "AND pgg.thoiGianHetHan >= current_timestamp ")
+            "AND pgg.thoiGianHetHan >= current_timestamp " +
+            "AND pgg.soLuong > 0 ")
     List<PhieuGiamGia>findPhieuGiamGiaByKhachHang(@Param("idKH") Integer idKH);
 }

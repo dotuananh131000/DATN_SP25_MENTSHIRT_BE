@@ -224,6 +224,13 @@ public class HoaDonService {
         return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 
+    public HoaDonResponse doiLoaiDon (Integer idHoaDon) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found for id " + idHoaDon));
+        hoaDon.setLoaiDon(hoaDon.getLoaiDon() == 0? 1:0);
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+    }
+
 
 
 

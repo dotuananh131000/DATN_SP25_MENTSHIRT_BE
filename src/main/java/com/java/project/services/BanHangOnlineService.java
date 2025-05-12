@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -34,22 +35,32 @@ public class BanHangOnlineService {
     HoaDonChiTietRepository hoaDonChiTietRepository;
 
 
-    public List<PhieuGiamGiaDto> getPhieuGiamGiaByKH(Integer idKH) {
+    public List<PhieuGiamGia> getPhieuGiamGiaByKH(Integer idKH) {
         List<PhieuGiamGia> listPhieuGiamGia = phieuGiamGiaRepository.findPhieuGiamGiaByKhachHang(idKH);
-        return listPhieuGiamGia.stream()
-                .map(PhieuGiamGiaMapper ::toDTO)
-                .toList();
+        return listPhieuGiamGia;
     }
 
     // Lấy phiếu giảm giá tốt nhất cho khách hàng
-    public PhieuGiamGiaDto theBestVoucher (Integer idKH, Double tongTien) {
-        List<PhieuGiamGiaDto> list = getPhieuGiamGiaByKH(idKH);
+    @Transactional
+    public PhieuGiamGia theBestVoucher (Integer idKH, Integer idHD, Double tongTien) {
+        List<PhieuGiamGia> list = getPhieuGiamGiaByKH(idKH);
 
-        PhieuGiamGiaDto phieuGiamGiaDto = null;
+        HoaDon hoaDon = hoaDonRepository.findById(idHD)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found by id" + idHD));
+
+        // Trả lại phiếu giảm gias trước đó khi cập nhật phiếu giảm giá tốt nhất
+        PhieuGiamGia phieuGiamGia = hoaDon.getPhieuGiamGia();
+        if(phieuGiamGia != null) {
+            phieuGiamGia.setSoLuong(phieuGiamGia.getSoLuong() + 1);
+            hoaDon.setPhieuGiamGia(null);
+            phieuGiamGiaRepository.save(phieuGiamGia);
+        }
+
+        PhieuGiamGia phieuGiamGiaTotNhat = null;
 
         Double tienGiamTotNhat = 0.0;
 
-        for (PhieuGiamGiaDto pgg : list) {
+        for (PhieuGiamGia pgg : list) {
             Double tienGiam = 0.0;
 
             // Bỏ qua các phiếu không đủ điều kieenj
@@ -69,13 +80,23 @@ public class BanHangOnlineService {
 
             if(tienGiam.compareTo(tienGiamTotNhat) > 0) {
                 tienGiamTotNhat = tienGiam;
-                phieuGiamGiaDto = pgg;
+                phieuGiamGiaTotNhat = pgg;
             }
 
         }
+        if(phieuGiamGiaTotNhat.getSoLuong() > 0){
+            phieuGiamGiaTotNhat.setSoLuong(phieuGiamGiaTotNhat.getSoLuong() - 1);
+            hoaDon.setPhieuGiamGia(phieuGiamGiaTotNhat);
+            phieuGiamGiaRepository.save(phieuGiamGiaTotNhat);
+            hoaDonRepository.save(hoaDon);
+        }else {
+            throw new IllegalStateException("Phếu giảm giá ã hết lượt sử dụng");
+        }
 
-        return phieuGiamGiaDto;
+
+        return phieuGiamGiaTotNhat;
     }
+
 
     public HoaDon addHoaDonOnline(HoaDonModel hoaDonModel){
         HoaDon hoaDon = new HoaDon();

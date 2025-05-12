@@ -192,4 +192,13 @@ public class HoaDonController {
                 .message("Đã bỏ chọn khách hàng")
                 .build();
     }
+
+    @PutMapping("/doi-loai-don/{idHD}")
+    public APIRequestOrResponse<HoaDonResponse>doiLoaiDon(
+            @PathVariable Integer idHD){
+        return APIRequestOrResponse .<HoaDonResponse> builder()
+                .data(hoaDonService.doiLoaiDon(idHD))
+                .message("Đã đổi loại đơn")
+                .build();
+    }
 }
