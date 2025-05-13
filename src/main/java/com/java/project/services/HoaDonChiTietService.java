@@ -74,7 +74,7 @@ public class HoaDonChiTietService {
 
                     Double thanhTienMoi = hoaDonChiTiet.getThanhTien() + thanhTien.doubleValue();
                     hoaDonChiTiet.setThanhTien(thanhTienMoi);
-                    hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
+//                    hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
                 }else {
                     hoaDonChiTiet = new HoaDonChiTiet();
                     BeanUtils.copyProperties(hdctRequest, hoaDonChiTiet);
@@ -84,7 +84,7 @@ public class HoaDonChiTietService {
                     BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong()));
 
                     hoaDonChiTiet.setThanhTien(thanhTien.doubleValue());
-                    hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
+//                    hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
                 }
             }else {
                 hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + hdctRequest.getSoLuong());
@@ -93,7 +93,7 @@ public class HoaDonChiTietService {
                 BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(hdctRequest.getSoLuong()));
 
                 hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() + thanhTien.doubleValue());
-                hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
+//                hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
             }
 
         }else {
@@ -105,7 +105,7 @@ public class HoaDonChiTietService {
             BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong()));
 
             hoaDonChiTiet.setThanhTien(thanhTien.doubleValue());
-            hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
+//            hoaDon.setTongTien(tongTienHoaDon + thanhTien.doubleValue());
         }
 
         if(hoaDon.getLoaiDon() != 2){
@@ -121,7 +121,7 @@ public class HoaDonChiTietService {
             }
 
         }
-        hoaDonRepository.save(hoaDon);
+//        hoaDonRepository.save(hoaDon);
         return hoaDonChiTietMapper.toHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
     }
 
@@ -154,17 +154,76 @@ public class HoaDonChiTietService {
             }
 
 
-            Double tongTienPre = hoaDon.getTongTien() != null ? hoaDon.getTongTien() : 0.0;
-            hoaDon.setTongTien(tongTienPre - hoaDonChiTiet.getThanhTien());
+//            Double tongTienPre = hoaDon.getTongTien() != null ? hoaDon.getTongTien() : 0.0;
+//            hoaDon.setTongTien(tongTienPre - hoaDonChiTiet.getThanhTien());
             listUpdate.remove(hoaDonChiTiet);
 
-            hoaDonRepository.save(hoaDon);
+//            hoaDonRepository.save(hoaDon);
             sanPhamChiTietRepository.save(sanPhamChiTiet);
             hoaDonChiTietRepository.delete(hoaDonChiTiet);
 
             return listUpdate.stream()
                     .map(hoaDonChiTietMapper::toHoaDonChiTietResponse)
                     .toList();
+    }
+
+    @Transactional
+    public HoaDonChiTietResponse capNhatSoLuong(Integer idHoaDonChiTiet, Integer soLuong){
+        HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(idHoaDonChiTiet)
+                .orElseThrow(() -> new EntityNotFoundException("Not found ProductDetail"));
+
+        SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+
+        if(soLuong <= 0){
+            throw new IllegalArgumentException("Số lượng phải lớn hơn không");
+        }
+
+        // Kiểm tra số lượng hợp lệ khi tăng
+        Integer checkSoLuongHopLe = soLuong - hoaDonChiTiet.getSoLuong();
+
+        if(checkSoLuongHopLe > sanPhamChiTiet.getSoLuong()){
+            throw new IllegalArgumentException("Số lượng vượt quá số lượng tồn");
+        }
+
+        Integer khoangThayDoi = Math.abs(hoaDonChiTiet.getSoLuong() - soLuong);
+        //Số tiền lẹch
+        Double soTienLech = sanPhamChiTiet.getDonGia().doubleValue() * khoangThayDoi;
+
+        HoaDon hoaDon = hoaDonChiTiet.getHoaDon();
+
+        // Nếu giảm số lợng của sản phaarm
+        if(hoaDonChiTiet.getSoLuong() > soLuong){
+            hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() - soTienLech);
+        } else if (hoaDonChiTiet.getSoLuong() < soLuong){
+            if(soLuong == 1){
+                hoaDonChiTiet.setThanhTien(sanPhamChiTiet.getDonGia().doubleValue());
+            }else {
+                hoaDonChiTiet.setThanhTien(hoaDonChiTiet.getThanhTien() + soTienLech);
+            }
+
+        }
+
+        //Xử lý khi hóa đơn là bán hàng tại quầy
+        if(hoaDon.getLoaiDon() != 2){
+            if(hoaDonChiTiet.getSoLuong() > soLuong){
+                // Khi giảm số lượng
+                sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() + khoangThayDoi);
+            } else if (hoaDonChiTiet.getSoLuong() < soLuong){
+                // Khi tăn số lượng
+                if(sanPhamChiTiet.getSoLuong() <= 0) {
+                    throw new IllegalArgumentException("Số lượng vượt quá số lượng tồn");
+                }
+                sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - khoangThayDoi);
+            }
+
+            sanPhamChiTietRepository.save(sanPhamChiTiet);
+        }
+
+
+        hoaDonChiTiet.setSoLuong(soLuong);
+
+        return hoaDonChiTietMapper.toHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
+
     }
 
 }

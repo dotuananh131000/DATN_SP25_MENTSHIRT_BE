@@ -5,6 +5,7 @@ import com.java.project.entities.HoaDonChiTiet;
 import com.java.project.repositories.HoaDonChiTietRepository;
 import com.java.project.request.APIRequestOrResponse;
 import com.java.project.request.HoaDonChiTietRequest;
+import com.java.project.request.UpdateSoLuongRequest;
 import com.java.project.services.BanHangService;
 import com.java.project.services.HoaDonChiTietService;
 import com.java.project.services.HoaDonService;
@@ -54,6 +55,15 @@ public class HoaDonChiTietController {
         return APIRequestOrResponse.<List<HoaDonChiTietResponse>>builder()
                 .message("Đã xóa sản phẩm ra khỏi đơn hàng")
                 .data(listHdct)
+                .build();
+    }
+
+    @PutMapping("/{id}")
+    public APIRequestOrResponse<HoaDonChiTietResponse>updateSoLuong(@PathVariable("id") Integer id,
+                                                                    @RequestBody UpdateSoLuongRequest request){
+        return APIRequestOrResponse.<HoaDonChiTietResponse>builder()
+                .data(hoaDonChiTietService.capNhatSoLuong(id, request.getSoLuong()))
+                .message("Đã Cập nhật số lượng sản phẩm")
                 .build();
     }
 
