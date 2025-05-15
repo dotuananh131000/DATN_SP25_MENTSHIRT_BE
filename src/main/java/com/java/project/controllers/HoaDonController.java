@@ -7,6 +7,7 @@ import com.java.project.mappers.HoaDonMapper;
 import com.java.project.repositories.HoaDonChiTietRepository;
 import com.java.project.repositories.HoaDonRepository;
 import com.java.project.request.APIRequestOrResponse;
+import com.java.project.request.ChonPhieuGiamGiaHoaDonRequest;
 import com.java.project.request.ConfirmHoaDonRequest;
 import com.java.project.request.ThongTinDonHangRequest;
 import com.java.project.services.HoaDonService;
@@ -191,6 +192,15 @@ public class HoaDonController {
         return APIRequestOrResponse .<HoaDonResponse> builder()
                 .data(hoaDonService.removeKhachHang(idHD))
                 .message("Đã bỏ chọn khách hàng")
+                .build();
+    }
+
+    @PutMapping("/chon-phieu-giam-gia/{idHD}")
+    public APIRequestOrResponse<HoaDonResponse>hoaDonChonPhieuGiamGia(
+            @PathVariable("idHD") Integer idHD, @RequestBody ChonPhieuGiamGiaHoaDonRequest request) {
+        return APIRequestOrResponse .<HoaDonResponse> builder()
+                .data(hoaDonService.chonPhieuGiamGiaKhac(idHD, request.getIdPGG()))
+                .message("Đã chọn phiếu giảm giá mới")
                 .build();
     }
 
