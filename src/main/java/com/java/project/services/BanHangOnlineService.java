@@ -51,12 +51,13 @@ public class BanHangOnlineService {
         HoaDon hoaDon = hoaDonRepository.findById(idHD)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found by id" + idHD));
 
-        // Trả lại phiếu giảm gias trước đó khi cập nhật phiếu giảm giá tốt nhất
         PhieuGiamGia phieuGiamGia = hoaDon.getPhieuGiamGia();
+
         if(phieuGiamGia != null) {
-            phieuGiamGia.setSoLuong(phieuGiamGia.getSoLuong() + 1);
-            hoaDon.setPhieuGiamGia(null);
-            phieuGiamGiaRepository.save(phieuGiamGia);
+            if(tongTien < phieuGiamGia.getSoTienToiThieuHd()) {
+                phieuGiamGia.setSoLuong(phieuGiamGia.getSoLuong() + 1);
+                hoaDon.setPhieuGiamGia(null);
+            }
         }
 
         PhieuGiamGia phieuGiamGiaTotNhat = null;
@@ -87,6 +88,21 @@ public class BanHangOnlineService {
             }
 
         }
+
+        // Trừ số lượng của phiều giảm giá cũ
+        if(phieuGiamGia != null) {
+            // Nếu phiếu giảm giá cũ là phiều giảm giá tốt nht thì ngưng
+            if(soTienGiamCuaPhieu(phieuGiamGia,tongTien) >= tienGiamTotNhat) {
+                return phieuGiamGia;
+            }else {
+                phieuGiamGia.setSoLuong(phieuGiamGia.getSoLuong() + 1);
+                hoaDon.setPhieuGiamGia(null);
+                phieuGiamGiaRepository.save(phieuGiamGia);
+            }
+
+        }
+
+
         if(phieuGiamGiaTotNhat.getSoLuong() > 0){
             phieuGiamGiaTotNhat.setSoLuong(phieuGiamGiaTotNhat.getSoLuong() - 1);
             hoaDon.setPhieuGiamGia(phieuGiamGiaTotNhat);
@@ -98,6 +114,27 @@ public class BanHangOnlineService {
 
 
         return phieuGiamGiaTotNhat;
+    }
+
+    // Tính tiền giảm của phiều giảm giá
+    private Double soTienGiamCuaPhieu(PhieuGiamGia phieuGiamGia, Double tongTien) {
+        Double tienGiam = 0.0;
+
+        if(phieuGiamGia.getHinhThucGiamGia() == 0) {
+            Double tinhTienGiam = tongTien * (phieuGiamGia.getGiaTriGiam() / 100);
+
+            tienGiam = Math.min(tinhTienGiam, phieuGiamGia.getSoTienGiamToiDa());
+
+
+        }else if(phieuGiamGia.getHinhThucGiamGia() == 1) {
+            tienGiam = phieuGiamGia.getGiaTriGiam();
+        }
+
+        if(tongTien < phieuGiamGia.getSoTienToiThieuHd()) {
+            return 0.0;
+        }
+
+        return tienGiam;
     }
 
     @Transactional

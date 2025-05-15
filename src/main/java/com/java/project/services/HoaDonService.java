@@ -41,6 +41,8 @@ public class HoaDonService {
 
     KhachHangRepository khachHangRepository;
 
+    PhieuGiamGiaRepository phieuGiamGiaRepository;
+
     public HoaDonResponse add(Integer idNhanVien) {
 
         NhanVien nhanVien = nhanVienRepository.findById(idNhanVien)
@@ -224,6 +226,33 @@ public class HoaDonService {
                 .orElseThrow(() -> new EntityNotFoundException("Order not found for id " + idHoaDon));
         hoaDon.setKhachHang(null);
         return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+    }
+
+    @Transactional
+    public HoaDonResponse chonPhieuGiamGiaKhac (Integer idHoaDon, Integer idPGG) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found for id " + idHoaDon));
+
+        PhieuGiamGia phieuGiamGia = hoaDon.getPhieuGiamGia();
+
+        PhieuGiamGia phieuGiamGiaChon = phieuGiamGiaRepository.findById(idPGG)
+                .orElseThrow(() -> new EntityNotFoundException("Voucher not found for id " + idPGG));
+
+        if(phieuGiamGiaChon.getSoLuong() <= 0){
+            throw  new IllegalArgumentException("Quantity of voucher not enough");
+        }
+
+        if(phieuGiamGia != null){
+            phieuGiamGia.setSoLuong(phieuGiamGia.getSoLuong() + 1);
+            phieuGiamGiaRepository.save(phieuGiamGia);
+        }
+
+        phieuGiamGiaChon.setSoLuong(phieuGiamGiaChon.getSoLuong() - 1);
+        hoaDon.setPhieuGiamGia(phieuGiamGiaChon);
+
+        phieuGiamGiaRepository.save(phieuGiamGiaChon);
+        return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));
+
     }
 
     public HoaDonResponse doiLoaiDon (Integer idHoaDon) {
