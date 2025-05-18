@@ -49,8 +49,8 @@ public class VNPaymentService {
 
         // Tổng tiền đơn hàng
 
-        long totalAmount = (hoaDon.getTongTien().longValue()) + hoaDon.getPhiShip().longValue() - tinhTienGiam(hoaDon) ;
-        long amount = totalAmount * 100;
+        Double totalAmount = hoaDon.getTongTien() ;
+        Double amount = totalAmount * 100;
 
         // Tạo tham số VNPay
         Map<String, String> vnp_Params = new HashMap<>();
@@ -115,14 +115,12 @@ public class VNPaymentService {
         // Lấy thông tin hóa đơn từ DB
         HoaDon hoaDon = hoaDonRepository.findByMaHoaDon(vnpTxnRef)
                 .orElseThrow(() -> new EntityNotFoundException("Hóa đơn không tồn tại."));
-        BigDecimal tongTienSanPham =
-                BigDecimal.valueOf(hoaDon.getTongTien() + hoaDon.getPhiShip() - tinhTienGiam(hoaDon));
 
         // Chuyển đổi số tiền từ VNPay về VNĐ
         BigDecimal amountFromVNPay = new BigDecimal(vnpAmount).divide(BigDecimal.valueOf(100));
 
         // Kiểm tra số tiền có khớp không
-        if (tongTienSanPham.compareTo(amountFromVNPay) != 0) {
+        if (hoaDon.getTongTien().compareTo(amountFromVNPay.doubleValue()) != 0) {
             throw new IllegalArgumentException("Số tiền thanh toán không khớp với hóa đơn.");
         }
 
@@ -183,27 +181,6 @@ public class VNPaymentService {
         hdpttt.setSoTienThanhToan(total);
 
         hoaDonPhuongThucThanhToanRepository.save(hdpttt);
-    }
-
-    private long tinhTienGiam (HoaDon hoaDon) {
-        PhieuGiamGia phieuGiamGia = hoaDon.getPhieuGiamGia();
-
-        if(phieuGiamGia == null) return 0;
-
-        Double tongTien = hoaDon.getTongTien();
-        long soTienGiam = 0;
-
-        if(phieuGiamGia.getHinhThucGiamGia() == 0) {
-            soTienGiam = Math.round(tongTien * phieuGiamGia.getGiaTriGiam() / 100);
-        } else {
-            soTienGiam = Math.round(phieuGiamGia.getGiaTriGiam());
-        }
-
-        if(phieuGiamGia.getSoTienGiamToiDa() != null) {
-            soTienGiam = Math.min(soTienGiam, phieuGiamGia.getSoTienGiamToiDa().longValue());
-        }
-
-        return soTienGiam;
     }
 
     public String generateHtml(String title, String message, String content) {

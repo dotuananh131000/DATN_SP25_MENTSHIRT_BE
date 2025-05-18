@@ -192,7 +192,7 @@ public class BanHangOnlineService {
 
          hoaDon.setTrangThai(0);
 
-         hoaDon.setTongTien(caculatorTongTien(danhSachChiTiet));//Trả về hóa đơn chưa thanh toans
+         hoaDon.setTongTien(hoaDonModel.getTongTien());//Trả về hóa đơn chưa thanh toans
 
         return hoaDonRepository.save(hoaDon);
 
