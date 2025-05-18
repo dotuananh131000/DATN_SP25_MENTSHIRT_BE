@@ -40,4 +40,7 @@ public class HoaDonModel {
     @NotNull(message = "Danh sách chi tiết đơn hàng không được để trống")
     @Size(min = 1, message = "Phải có ít nhất một sản phẩm trong đơn hàng")
     private List<@Valid HoaDonChiTietModel> danhSachChiTiet;
+
+    @NotNull(message = "Tổng Tiền không được để trống")
+    private Double tongTien;
 }
