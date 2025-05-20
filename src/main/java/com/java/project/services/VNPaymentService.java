@@ -50,7 +50,7 @@ public class VNPaymentService {
         // Tổng tiền đơn hàng
 
         Double totalAmount = hoaDon.getTongTien() ;
-        Double amount = totalAmount * 100;
+        long amount = Math.round(totalAmount * 100);
 
         // Tạo tham số VNPay
         Map<String, String> vnp_Params = new HashMap<>();

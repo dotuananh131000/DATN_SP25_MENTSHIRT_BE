@@ -53,6 +53,7 @@ public interface PhieuGiamGiaRepository extends JpaRepository<PhieuGiamGia, Inte
             "WHERE (pgg.loaiGiam = 0 OR pggkh.idKhachHang IS NOT NULL)" +
             "AND pgg.thoiGianApDung <= current_timestamp " +
             "AND pgg.thoiGianHetHan >= current_timestamp " +
-            "AND pgg.soLuong > 0 ")
+            "AND pgg.soLuong > 0 " +
+            "AND pgg.trangThai = 1 ")
     List<PhieuGiamGia>findPhieuGiamGiaByKhachHang(@Param("idKH") Integer idKH);
 }

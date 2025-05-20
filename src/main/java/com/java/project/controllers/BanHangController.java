@@ -1,5 +1,6 @@
 package com.java.project.controllers;
 
+import com.java.project.dtos.HoaDonChiTietResponse;
 import com.java.project.dtos.HoaDonHomNayResponse;
 import com.java.project.dtos.KhachHangResponse;
 import com.java.project.dtos.PhieuGiamGiaKhachHangResponse;
@@ -144,54 +145,26 @@ public class BanHangController {
 
 
     @PostMapping("/addHdct")
-    public ResponseEntity<Map<String, Object>>addHDCT(@Valid @RequestBody HoaDonChiTietRequest hoaDonChiTietRequest,
-                                                      BindingResult bindingResult){
-        Map<String, Object> response = new HashMap<>();
-
-        if(bindingResult.hasErrors()) {
-            response.put("succsess", false);
-            List<String>errMessage = bindingResult.getAllErrors().stream()
-                    .map(error -> error.getDefaultMessage())
-                    .collect(Collectors.toList());
-            response.put("error", errMessage);
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        try{
-            HoaDonChiTiet hdct =
-                    banHangService.AddOrUpdateHoaDonChiTiet(hoaDonChiTietRequest);
-            banHangService.updateTongTienHoaDon(hdct.getHoaDon().getId());
-            response.put("succsess", true);
-            response.put("message", "Đã thêm hóa đơn chi tiết mới");
-            response.put("Mã hóa đơn ", hdct.getHoaDon().getMaHoaDon());
-            return ResponseEntity.ok(response);
-        }catch (Exception e){
-            response.put("success", false);
-            response.put("message", "Thêm hóa đơn chi tiết thất bại: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+    public APIRequestOrResponse<HoaDonChiTietResponse> addHDCT(@Valid @RequestBody HoaDonChiTietRequest hoaDonChiTietRequest){
+        return APIRequestOrResponse.<HoaDonChiTietResponse>builder()
+                .data(banHangService.AddOrUpdateHoaDonChiTiet(hoaDonChiTietRequest))
+                .build();
     }
 
     @PutMapping("/update-quantity/{id}")
-    public ResponseEntity<Object>updateQuantityHDCT(@PathVariable("id") Integer id,@RequestBody Integer newQuantity) {
-        HoaDonChiTiet upDateHoaDonChiTiet = null;
-        try {
-            upDateHoaDonChiTiet = banHangService.updateQuatityHDCT(id, newQuantity);
-            return new ResponseEntity<>(upDateHoaDonChiTiet, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(upDateHoaDonChiTiet, HttpStatus.NOT_FOUND);
-        }
+    public APIRequestOrResponse<HoaDonChiTietResponse>updateQuantityHDCT(@PathVariable("id") Integer id,@RequestBody Integer newQuantity) {
+        return APIRequestOrResponse.<HoaDonChiTietResponse>builder()
+                .data(banHangService.updateQuatityHDCT(id,newQuantity))
+                .build();
     }
 
     @DeleteMapping("/deleteHDCT/{id}")
     @Transactional
-    public ResponseEntity<String>deleteHDCT(@PathVariable("id") Integer id) {
-        try {
-            banHangService.deleteHoaDonChiTiet(id);
-            return new ResponseEntity<>("Xóa hóa đơn chi tiết thành công ", HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>("Xóa hóa đơn chi tiết thất bại",HttpStatus.NOT_FOUND);
-        }
+    public APIRequestOrResponse<List<HoaDonChiTietResponse>>deleteHDCT(@PathVariable("id") Integer id) {
+        return APIRequestOrResponse .<List<HoaDonChiTietResponse>>builder()
+                .data(banHangService.deleteHoaDonChiTiet(id))
+                .message("Xóa sản phẩm thành công")
+                .build();
     }
 
 

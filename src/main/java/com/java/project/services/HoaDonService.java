@@ -176,7 +176,7 @@ public class HoaDonService {
             hoaDon.setPhuPhi(BigDecimal.ZERO);
         }
         BigDecimal chenhLech = BigDecimal.valueOf(thongTinDonHangRequest.getPhiShip() - hoaDon.getPhiShip());
-        hoaDon.setPhuPhi(hoaDon.getPhuPhi().add(chenhLech));
+        hoaDon.setTongTien(hoaDon.getTongTien() + chenhLech.doubleValue());
         hoaDon.setPhiShip(thongTinDonHangRequest.getPhiShip());
 
         return hoaDonMapper.toHoaDonResponse(hoaDonRepository.save(hoaDon));

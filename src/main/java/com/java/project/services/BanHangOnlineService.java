@@ -198,11 +198,6 @@ public class BanHangOnlineService {
 
     }
 
-    private Double caculatorTongTien(List<HoaDonChiTiet>listSanPham){
-        return listSanPham.stream()
-                .mapToDouble(hoaDonChiTiet -> hoaDonChiTiet.getThanhTien().doubleValue())
-                .sum();
-    }
 
     private List<HoaDonChiTiet>processOrderDetail(List<HoaDonChiTietModel>danhSachChitiet, HoaDon hoaDon){
         return danhSachChitiet.stream().map(chiTietModel -> {
@@ -213,6 +208,7 @@ public class BanHangOnlineService {
             hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
             hoaDonChiTiet.setSoLuong(chiTietModel.getSoLuong());
             hoaDonChiTiet.setThanhTien(sanPhamChiTiet.getDonGia().doubleValue() * chiTietModel.getSoLuong());
+            hoaDonChiTiet.setTrangThai(0);
             hoaDonChiTiet.setHoaDon(hoaDon);
             return hoaDonChiTietRepository.save(hoaDonChiTiet);
         }).collect(Collectors.toList());
