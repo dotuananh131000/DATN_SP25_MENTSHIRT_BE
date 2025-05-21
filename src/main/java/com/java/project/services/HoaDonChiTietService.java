@@ -102,7 +102,7 @@ public class HoaDonChiTietService {
                     if(hoaDon.getTrangThai() == 0) {
                         hoaDon.setTongTien(hoaDon.getTongTien() +thanhTien.doubleValue());
                     } else {
-                        hoaDon.setPhuPhi(hoaDon.getPhuPhi().add(thanhTien));
+                        hoaDon.setPhuPhi(phuPhi.add(thanhTien));
                     }
                 }
             // với hóa đơn offline
@@ -150,10 +150,13 @@ public class HoaDonChiTietService {
             HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(idHoaDonChiTiet)
                     .orElseThrow(() -> new EntityNotFoundException("Not found ProductDetail"));
 
-            if(hoaDonChiTiet.getTrangThai() != null && hoaDonChiTiet.getTrangThai() == 1)
-                throw new RuntimeException("Không thể xóa sản phẩm đã thanh toán");
-
             HoaDon hoaDon = hoaDonChiTiet.getHoaDon();
+
+            if(hoaDon.getLoaiDon() == 2) {
+                if(hoaDonChiTiet.getTrangThai() != null && hoaDonChiTiet.getTrangThai() == 1)
+                    throw new RuntimeException("Không thể xóa sản phẩm đã thanh toán");
+
+            }
 
             List<HoaDonChiTiet> listUpdate =
                     hoaDonChiTietRepository.findByHoaDon_Id(hoaDon.getId());
