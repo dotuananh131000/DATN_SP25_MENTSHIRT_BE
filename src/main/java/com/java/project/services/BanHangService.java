@@ -162,7 +162,7 @@ public class BanHangService {
 
         if(ListProductDetail.size() > 0) {
             for (HoaDonChiTietResponse hdct : ListProductDetail) {
-                if(hdct.getTrangThai() == 1) continue;
+                if(hdct.getTrangThai() != null && hdct.getTrangThai() == 1) continue;
 
                 Optional<SanPhamChiTiet> spctOptional = sanPhamChiTietRepository.findById(hdct.getIdSPCT());
                 if(spctOptional.isPresent()){
