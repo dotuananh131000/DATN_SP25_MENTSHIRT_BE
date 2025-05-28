@@ -29,6 +29,10 @@ public class HoaDonResponse {
 
     private String maHoaDon;
 
+    private String maPhieuGiamGia;
+
+    private String tenPhieuGiamGia;
+
     private Integer loaiDon;
 
     private String hoTenNguoiNhan;
@@ -46,6 +50,8 @@ public class HoaDonResponse {
     private Integer hinhThucGiamGia;
 
     private Double soTienGiamToiDa;
+
+    private Double soTienToiThieuHd;
 
     private Double giaTriGiam;
 
