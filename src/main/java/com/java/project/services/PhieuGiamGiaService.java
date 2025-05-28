@@ -61,6 +61,17 @@ public class PhieuGiamGiaService {
     public PhieuGiamGiaDto create(PhieuGiamGiaCreateModel model) {
         validateDuplicate(model.getMaPhieuGiamGia(), model.getTenPhieuGiamGia());
 
+        // vadate giảm giá theo phẩn trăm
+        if(model.getHinhThucGiamGia() == 0) {
+            if(model.getSoTienGiamToiDa() > model.getSoTienToiThieuHd()) {
+                throw new IllegalArgumentException("Số tiền giảm tối đa phải bé hơn số tiền giảm tối thiểu");
+            }
+        }else {
+            if(model.getGiaTriGiam() > model.getSoTienToiThieuHd()) {
+                throw new IllegalArgumentException("Giá trị giảm phải bé hơn số tiền giảm tối thiểu");
+            }
+        }
+
         PhieuGiamGia phieuGiamGia = new PhieuGiamGia();
         phieuGiamGia.setMaPhieuGiamGia(model.getMaPhieuGiamGia());
         phieuGiamGia.setTenPhieuGiamGia(model.getTenPhieuGiamGia());
@@ -111,6 +122,17 @@ public class PhieuGiamGiaService {
                 .orElseThrow(() -> new EntityNotFoundException("Phiếu giảm giá không tồn tại"));
 
         validateDuplicateForUpdate(id, model.getTenPhieuGiamGia());
+
+        // vadate giảm giá theo phẩn trăm
+        if(model.getHinhThucGiamGia() == 0) {
+            if(model.getSoTienGiamToiDa() > model.getSoTienToiThieuHd()) {
+                throw new IllegalArgumentException("Số tiền giảm tối đa phải bé hơn số tiền giảm tối thiểu");
+            }
+        }else {
+            if(model.getGiaTriGiam() > model.getSoTienToiThieuHd()) {
+                throw new IllegalArgumentException("Giá trị giảm phải bé hơn số tiền giảm tối thiểu");
+            }
+        }
 
         phieuGiamGia.setTenPhieuGiamGia(model.getTenPhieuGiamGia());
         phieuGiamGia.setThoiGianApDung(model.getThoiGianApDung());
